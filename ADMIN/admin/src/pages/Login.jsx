@@ -64,7 +64,7 @@ export default function Login() {
           <button type="submit" className="btn-primary">Login</button>
 
           <p className="switch-text">
-            New User? <span onClick={() => navigate("/register")}>Register</span>
+            New User? <span onClick={() => navigate("/register")}>Register59459</span>
           </p>
         </form>
       </div>
