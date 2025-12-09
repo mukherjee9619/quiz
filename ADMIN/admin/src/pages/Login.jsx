@@ -65,7 +65,7 @@ export default function Login() {
 
           <p className="switch-text">
 
-            New User? <span onClick={() => navigate("/register")}>Register59459</span>
+            New User? <span onClick={() => navigate("/register")}>Register</span>
 
          
 
