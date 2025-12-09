@@ -15,7 +15,7 @@ export default function AddQuestion() {
   // 🔥 Fetch subjects from backend
   const loadSubjects = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8081/api/subjects");
+      const res = await fetch("http://127.0.0.1:8081/api/admin/subjects");
       const data = await res.json();
 
       if (Array.isArray(data)) {
@@ -25,6 +25,7 @@ export default function AddQuestion() {
       console.log("Subjects fetch error:", err);
     }
   };
+
 
   useEffect(() => {
     loadSubjects();
@@ -56,7 +57,7 @@ export default function AddQuestion() {
     };
 
     try {
-      const res = await fetch("http://127.0.0.1:8081/api/questions", {
+      const res = await fetch("http://127.0.0.1:8081/api/admin/questions", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

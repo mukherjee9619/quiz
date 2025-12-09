@@ -2,7 +2,7 @@ const http = require("http");
 const { MongoClient, ObjectId } = require("mongodb");
 
 // ===== MongoDB connection =====
-const url = "mongodb://127.0.0.1:27017";
+const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
@@ -62,7 +62,7 @@ const server = http.createServer(async (req, res) => {
         fullname: data.fullname,
         email: data.email,
         password: data.password,
-        role: "student",
+        role: "Admin",
         createdAt: new Date(),
       });
 
@@ -106,8 +106,18 @@ const server = http.createServer(async (req, res) => {
       const data = await parseBody();
       const subjects = db.collection("subjects");
 
+      // ---- Check if subject already exists ----
+      const existing = await subjects.findOne({ name: data.name.trim().toLowerCase() });
+
+      if (existing) {
+        res.writeHead(409, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({ message: "⚠️ Subject already exists!" }));
+        return;
+      }
+
+      // ---- Insert new subject ----
       const result = await subjects.insertOne({
-        name: data.name,
+        name: data.name.trim().toLowerCase(),
         description: data.description,
         createdAt: new Date(),
       });
@@ -120,6 +130,7 @@ const server = http.createServer(async (req, res) => {
         })
       );
     }
+
 
     // ===================================================
     // GET ALL SUBJECTS
@@ -135,7 +146,8 @@ const server = http.createServer(async (req, res) => {
     // SUBJECT BY ID (GET + DELETE)
     // ===================================================
     else if (req.url.startsWith("/api/admin/subjects/")) {
-      const id = req.url.split("/")[3];
+      const parts = req.url.split("/");
+      const id = parts[4];
       const subjects = db.collection("subjects");
 
       if (req.method === "GET") {
@@ -204,10 +216,23 @@ const server = http.createServer(async (req, res) => {
     // ===================================================
     else if (req.method === "GET" && req.url === "/api/admin/questions") {
       const questions = await db.collection("questions").find({}).toArray();
+      const subjects = await db.collection("subjects").find({}).toArray();
+
+      // Create a map for fast lookup
+      const subjectMap = {};
+      subjects.forEach(s => {
+        subjectMap[s._id.toString()] = s.name;
+      });
+
+      const final = questions.map(q => ({
+        ...q,
+        subjectName: subjectMap[q.subjectId] || "Unknown"
+      }));
 
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(questions));
+      res.end(JSON.stringify(final));
     }
+
 
     // ===================================================
     // QUESTIONS BY SUBJECT
@@ -258,9 +283,13 @@ const server = http.createServer(async (req, res) => {
     // ⭐⭐⭐ ADMIN DASHBOARD LIVE STATS (NEW)
     // ===================================================
     else if (req.method === "GET" && req.url === "/api/admin/stats") {
+
       const subjects = await db.collection("subjects").countDocuments();
       const questions = await db.collection("questions").countDocuments();
-      const users = await db.collection("users").countDocuments();
+
+      // ⭐ Count ONLY normal users (exclude admins)
+      const users = await db.collection("users").countDocuments({ role: "user" });
+
       const results = await db.collection("results").countDocuments();
 
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -273,6 +302,7 @@ const server = http.createServer(async (req, res) => {
         })
       );
     }
+
 
     // ===================================================
     // INVALID ROUTE

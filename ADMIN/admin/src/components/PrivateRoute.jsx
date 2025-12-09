@@ -9,7 +9,7 @@ export default function PrivateRoute({ children }) {
 
   try {
     const u = JSON.parse(user)
-    if (!u.role || (u.role !== 'admin' && u.role !== 'owner')) {
+    if (!u.role || (u.role !== 'Admin' && u.role !== 'owner')) {
       return <Navigate to="/login" replace />
     }
   } catch {

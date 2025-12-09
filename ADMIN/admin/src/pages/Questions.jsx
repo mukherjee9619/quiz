@@ -4,14 +4,15 @@ import Sidebar from '../components/Sidebar'
 import { getJSON, del, uploadJSONFile } from '../services/api'
 import { useNavigate } from 'react-router-dom'
 
-export default function Questions(){
+export default function Questions() {
   const [list, setList] = useState([])
   const [file, setFile] = useState(null)
   const navigate = useNavigate()
 
-  useEffect(()=>{
+  useEffect(() => {
     getJSON('/api/admin/questions').then(res => { if (Array.isArray(res)) setList(res) })
-  },[])
+  }, [])
+  console.log("list", list);
 
   const remove = async (id) => {
     if (!confirm('Delete question?')) return
@@ -41,22 +42,27 @@ export default function Questions(){
             <div className="d-flex justify-content-between align-items-center">
               <h5>Questions</h5>
               <div>
-                <button className="btn btn-primary me-2" onClick={()=>navigate('/questions/add')}>Add Question</button>
-                <input type="file" accept=".json" onChange={e=>setFile(e.target.files[0])} />
+                <button className="btn btn-primary me-2" onClick={() => navigate('/questions/add')}>Add Question</button>
+                <input type="file" accept=".json" onChange={e => setFile(e.target.files[0])} />
                 <button className="btn btn-outline-secondary ms-2" onClick={upload}>Upload JSON</button>
               </div>
             </div>
 
-            <div style={{marginTop:12}}>
+            <div style={{ marginTop: 12 }}>
               {list.map(q => (
                 <div key={q._id} className="list-row">
-                  <div style={{flex:1}}>
-                    <div style={{fontWeight:800}}>{q.q}</div>
-                    <div className="muted">Subject: {q.subjectName || q.category}</div>
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800 }}>{q.question}</div>
+                    <div className="muted">Subject: {q.subjectName}</div>
                   </div>
+
                   <div>
-                    <button onClick={()=>navigate(`/questions/edit/${q._id}`)} className="btn btn-outline-secondary btn-sm me-2">Edit</button>
-                    <button onClick={()=>remove(q._id)} className="btn btn-danger btn-sm">Delete</button>
+                    <button onClick={() => navigate(`/questions/edit/${q._id}`)} className="btn btn-outline-secondary btn-sm me-2">
+                      Edit
+                    </button>
+                    <button onClick={() => remove(q._id)} className="btn btn-danger btn-sm">
+                      Delete
+                    </button>
                   </div>
                 </div>
               ))}

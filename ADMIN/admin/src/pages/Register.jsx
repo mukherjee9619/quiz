@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import { registerUser } from "../services/authApi"; 
 import "../styles/register.css";
 
 export default function Register() {
@@ -10,30 +11,30 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
 
-    // Check if user already exists
-    const savedUser = JSON.parse(localStorage.getItem("admin_user"));
-    if (savedUser && savedUser.email === email) {
-      toast.error("User already exists! Please login.");
+    const response = await registerUser({
+      fullname: name,
+      email,
+      phone,
+      password,
+    });
+
+    const { status, data } = response;
+
+    if (status === 409) {
+      toast.error("User already exists!");
+      return;
+    }
+
+    if (status === 201) {
+      toast.success("Registration successful! Please login.");
       setTimeout(() => navigate("/login"), 800);
       return;
     }
 
-    // Save new admin user
-    const user = {
-      name,
-      email,
-      phone,
-      password,
-      role: "admin",   // IMPORTANT FOR PrivateRoute
-    };
-
-    localStorage.setItem("admin_user", JSON.stringify(user));
-
-    toast.success("Registration successful! Please login.");
-    setTimeout(() => navigate("/login"), 800);
+    toast.error(data.message || "Something went wrong!");
   };
 
   return (

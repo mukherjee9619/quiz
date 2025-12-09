@@ -9,6 +9,12 @@ export default function Subjects() {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
+  const shortText = (text, max = 40) => {
+    if (!text) return "No description";
+    return text.length > max ? text.substring(0, max) + "..." : text;
+  };
+
+
   // ----------------------------------------
   // ✅ Fetch subjects from backend
   // ----------------------------------------
@@ -97,7 +103,7 @@ export default function Subjects() {
                         {s.name.toUpperCase()}
                       </div>
                       <div className="muted">
-                        {s.description || "No description"}
+                        {shortText(s.description, 270)}
                       </div>
                     </div>
 

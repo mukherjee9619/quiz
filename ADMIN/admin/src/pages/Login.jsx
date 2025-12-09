@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+
 import "../styles/login.css";
+import { loginUser } from "../services/authApi";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -9,28 +11,30 @@ export default function Login() {
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // use the same key you used when registering. earlier code used "admin_user"
-    const savedUser = JSON.parse(localStorage.getItem("admin_user"));
+    const response = await loginUser({ email, password });
+    const { status, data } = response;
 
-    if (!savedUser) {
-      setError("User does not exist. Please register first.");
-      // small delay so user sees error briefly, then go to register
-      setTimeout(() => navigate("/register"), 600);
+    if (status === 200) {
+      // Save session details
+      localStorage.setItem("admin_token", "sample_token_123");
+      localStorage.setItem("admin_user", JSON.stringify(data));
+
+      toast.success("LOGIN SUCCESSFUL 🎉 WELCOME TO SM QUIZ APP");
+      navigate("/dashboard")
+
       return;
     }
 
-    if (savedUser.email === email && savedUser.password === password) {
-      localStorage.setItem("admin_token", "sample_token_123");
-      toast.success("LOGIN SUCCESSFUL 🎉 WELCOME TO SM QUIZ APP");
-      // redirect to dashboard after short delay so toast shows
-      setTimeout(() => navigate("/dashboard"), 900);
-    } else {
-      setError("Invalid email or password");
+    if (status === 401) {
+      setError("Invalid email or password!");
+      return;
     }
+
+    setError("Server error. Try again!");
   };
 
   return (
@@ -64,11 +68,8 @@ export default function Login() {
           <button type="submit" className="btn-primary">Login</button>
 
           <p className="switch-text">
-
-            New User? <span onClick={() => navigate("/register")}>Register</span>
-
-         
-
+            New User?{" "}
+            <span onClick={() => navigate("/register")}>Register</span>
           </p>
         </form>
       </div>
