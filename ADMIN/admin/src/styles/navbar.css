@@ -1,0 +1,25 @@
+/* navbar.css - topbar / header */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+.topbar-left h3 {
+  margin: 0;
+  font-size: 20px;
+  color: var(--blue);
+}
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.topbar-user {
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: linear-gradient(90deg, var(--purple), var(--flipblue));
+  color: #fff;
+  font-weight: 700;
+}
