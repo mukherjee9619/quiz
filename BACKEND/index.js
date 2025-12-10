@@ -1,8 +1,10 @@
 const http = require("http");
 const { MongoClient, ObjectId } = require("mongodb");
+const multer = require("multer");
+const upload = multer();
 
 // ===== MongoDB connection =====
-const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
+const url = "mongodb://127.0.0.1:27017";
 const client = new MongoClient(url);
 let db;
 
@@ -54,8 +56,7 @@ const server = http.createServer(async (req, res) => {
       const existing = await users.findOne({ email: data.email });
       if (existing) {
         res.writeHead(409, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "⚠️ User already exists" }));
-        return;
+        return res.end(JSON.stringify({ message: "⚠️ User already exists" }));
       }
 
       const result = await users.insertOne({
@@ -67,7 +68,7 @@ const server = http.createServer(async (req, res) => {
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(
+      return res.end(
         JSON.stringify({
           message: "🎉 Registration Successful!",
           insertedId: result.insertedId,
@@ -83,20 +84,22 @@ const server = http.createServer(async (req, res) => {
       const users = db.collection("users");
 
       const user = await users.findOne({ email, password });
-      if (user) {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(
-          JSON.stringify({
-            message: "✅ Login Successful!",
-            fullname: user.fullname,
-            role: user.role,
-            email: user.email,
-          })
-        );
-      } else {
+      if (!user) {
         res.writeHead(401, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "❌ Invalid Email or Password!" }));
+        return res.end(
+          JSON.stringify({ message: "❌ Invalid Email or Password!" })
+        );
       }
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(
+        JSON.stringify({
+          message: "✅ Login Successful!",
+          fullname: user.fullname,
+          role: user.role,
+          email: user.email,
+        })
+      );
     }
 
     // ===================================================
@@ -106,16 +109,17 @@ const server = http.createServer(async (req, res) => {
       const data = await parseBody();
       const subjects = db.collection("subjects");
 
-      // ---- Check if subject already exists ----
-      const existing = await subjects.findOne({ name: data.name.trim().toLowerCase() });
+      const existing = await subjects.findOne({
+        name: data.name.trim().toLowerCase(),
+      });
 
       if (existing) {
         res.writeHead(409, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "⚠️ Subject already exists!" }));
-        return;
+        return res.end(
+          JSON.stringify({ message: "⚠️ Subject already exists!" })
+        );
       }
 
-      // ---- Insert new subject ----
       const result = await subjects.insertOne({
         name: data.name.trim().toLowerCase(),
         description: data.description,
@@ -123,14 +127,13 @@ const server = http.createServer(async (req, res) => {
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(
+      return res.end(
         JSON.stringify({
           message: "📘 Subject created!",
           insertedId: result.insertedId,
         })
       );
     }
-
 
     // ===================================================
     // GET ALL SUBJECTS
@@ -139,51 +142,35 @@ const server = http.createServer(async (req, res) => {
       const subjects = await db.collection("subjects").find({}).toArray();
 
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(subjects));
+      return res.end(JSON.stringify(subjects));
     }
 
     // ===================================================
-    // SUBJECT BY ID (GET + DELETE)
+    // DELETE SUBJECT + ITS QUESTIONS
     // ===================================================
-    else if (req.url.startsWith("/api/admin/subjects/")) {
-      const parts = req.url.split("/");
-      const id = parts[4];
-      const subjects = db.collection("subjects");
+    else if (
+      req.url.startsWith("/api/admin/subjects/") &&
+      req.method === "DELETE"
+    ) {
+      const id = req.url.split("/")[4];
 
-      if (req.method === "GET") {
-        try {
-          const subject = await subjects.findOne({ _id: new ObjectId(id) });
+      try {
+        const result = await db
+          .collection("subjects")
+          .deleteOne({ _id: new ObjectId(id) });
 
-          if (subject) {
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(subject));
-          } else {
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ message: "❌ Subject not found!" }));
-          }
-        } catch {
-          res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "⚠️ Invalid ID format!" }));
+        if (result.deletedCount === 0) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
         }
-      }
 
-      if (req.method === "DELETE") {
-        try {
-          const result = await subjects.deleteOne({ _id: new ObjectId(id) });
+        await db.collection("questions").deleteMany({ subjectId: id });
 
-          if (result.deletedCount === 1) {
-            await db.collection("questions").deleteMany({ subjectId: id });
-
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ message: "🗑️ Subject deleted!" }));
-          } else {
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ message: "❌ Subject not found!" }));
-          }
-        } catch {
-          res.writeHead(400, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "⚠️ Invalid ID format!" }));
-        }
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "🗑️ Subject deleted!" }));
+      } catch {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "⚠️ Invalid ID format!" }));
       }
     }
 
@@ -192,9 +179,8 @@ const server = http.createServer(async (req, res) => {
     // ===================================================
     else if (req.method === "POST" && req.url === "/api/admin/questions") {
       const data = await parseBody();
-      const questions = db.collection("questions");
 
-      const result = await questions.insertOne({
+      const result = await db.collection("questions").insertOne({
         subjectId: data.subjectId,
         question: data.question,
         options: data.options,
@@ -203,7 +189,7 @@ const server = http.createServer(async (req, res) => {
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
-      res.end(
+      return res.end(
         JSON.stringify({
           message: "❓ Question added!",
           insertedId: result.insertedId,
@@ -218,38 +204,16 @@ const server = http.createServer(async (req, res) => {
       const questions = await db.collection("questions").find({}).toArray();
       const subjects = await db.collection("subjects").find({}).toArray();
 
-      // Create a map for fast lookup
       const subjectMap = {};
-      subjects.forEach(s => {
-        subjectMap[s._id.toString()] = s.name;
-      });
+      subjects.forEach((s) => (subjectMap[s._id.toString()] = s.name));
 
-      const final = questions.map(q => ({
+      const final = questions.map((q) => ({
         ...q,
-        subjectName: subjectMap[q.subjectId] || "Unknown"
+        subjectName: subjectMap[q.subjectId] || "Unknown",
       }));
 
       res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(final));
-    }
-
-
-    // ===================================================
-    // QUESTIONS BY SUBJECT
-    // ===================================================
-    else if (
-      req.method === "GET" &&
-      req.url.startsWith("/api/admin/questions/")
-    ) {
-      const subjectId = req.url.split("/")[3];
-
-      const questions = await db
-        .collection("questions")
-        .find({ subjectId })
-        .toArray();
-
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(JSON.stringify(questions));
+      return res.end(JSON.stringify(final));
     }
 
     // ===================================================
@@ -266,50 +230,98 @@ const server = http.createServer(async (req, res) => {
           .collection("questions")
           .deleteOne({ _id: new ObjectId(id) });
 
-        if (result.deletedCount === 1) {
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "🗑️ Question deleted!" }));
-        } else {
+        if (result.deletedCount === 0) {
           res.writeHead(404, { "Content-Type": "application/json" });
-          res.end(JSON.stringify({ message: "❌ Question not found!" }));
+          return res.end(JSON.stringify({ message: "❌ Question not found!" }));
         }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "🗑️ Question deleted!" }));
       } catch {
         res.writeHead(400, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({ message: "⚠️ Invalid question ID!" }));
+        return res.end(JSON.stringify({ message: "⚠️ Invalid question ID!" }));
       }
     }
 
     // ===================================================
-    // ⭐⭐⭐ ADMIN DASHBOARD LIVE STATS (NEW)
+    // ⭐ FIXED: IMPORT QUESTIONS FROM JSON (YOUR FORMAT)
     // ===================================================
-    else if (req.method === "GET" && req.url === "/api/admin/stats") {
+    else if (
+      req.method === "POST" &&
+      req.url === "/api/admin/questions/import"
+    ) {
+      upload.single("file")(req, res, async () => {
+        try {
+          if (!req.file) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            return res.end(JSON.stringify({ message: "No file uploaded" }));
+          }
+          const subjects = await db.collection("subjects").find({}).toArray();
 
-      const subjects = await db.collection("subjects").countDocuments();
-      const questions = await db.collection("questions").countDocuments();
+          const subjectMap = {};
+          subjects.forEach((s) => (subjectMap[s._id.toString()] = s.name));
 
-      // ⭐ Count ONLY normal users (exclude admins)
-      const users = await db.collection("users").countDocuments({ role: "user" });
+          // JSON text
+          const jsonText = req.file.buffer.toString("utf8");
 
-      const results = await db.collection("results").countDocuments();
+          const json = JSON.parse(jsonText);
 
-      res.writeHead(200, { "Content-Type": "application/json" });
-      res.end(
-        JSON.stringify({
-          subjects,
-          questions,
-          users,
-          results,
-        })
-      );
+          if (!json.questions || !Array.isArray(json.questions)) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            return res.end(
+              JSON.stringify({
+                message: "Invalid format: expected {id, title, questions[]}",
+              })
+            );
+          }
+
+          const subjectName = json.title.toLowerCase();
+
+          let subject = await db
+            .collection("subjects")
+            .findOne({ name: subjectName });
+          if (!subject) {
+            const sub = await db.collection("subjects").insertOne({
+              name: subjectName,
+              description: "",
+              createdAt: new Date(),
+            });
+            subject = { _id: sub.insertedId };
+          }
+
+          const formattedQuestions = json.questions.map((q) => ({
+            subjectId: subject._id.toString(),
+            subjectName: subjectMap[subject._id] || "Unknown",
+            question: q.q,
+            options: q.options,
+            correctAnswer: q.answer,
+            createdAt: new Date(),
+          }));
+
+          const result = await db
+            .collection("questions")
+            .insertMany(formattedQuestions);
+
+          res.writeHead(200, { "Content-Type": "application/json" });
+          return res.end(
+            JSON.stringify({
+              message: "📥 Questions imported successfully!",
+              inserted: result.insertedCount,
+            })
+          );
+        } catch (err) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "Invalid JSON file!" }));
+        }
+      });
     }
-
 
     // ===================================================
     // INVALID ROUTE
     // ===================================================
     else {
       res.writeHead(404, { "Content-Type": "application/json" });
-      res.end(JSON.stringify({ message: "Route not found" }));
+      return res.end(JSON.stringify({ message: "Route not found" }));
     }
   } catch (err) {
     console.error("❌ Error:", err);

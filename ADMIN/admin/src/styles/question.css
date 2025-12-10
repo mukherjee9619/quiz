@@ -1,0 +1,13 @@
+.question-scroll {
+  max-height: 400px;
+  overflow-y: auto;
+  padding-right: 10px;
+
+  /* Hide scrollbar for all browsers */
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.question-scroll::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
+}
