@@ -19,10 +19,7 @@ client
 const server = http.createServer(async (req, res) => {
   // ===== CORS =====
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, PUT, DELETE, OPTIONS"
-  );
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
@@ -86,9 +83,7 @@ const server = http.createServer(async (req, res) => {
       const user = await users.findOne({ email, password });
       if (!user) {
         res.writeHead(401, { "Content-Type": "application/json" });
-        return res.end(
-          JSON.stringify({ message: "❌ Invalid Email or Password!" })
-        );
+        return res.end(JSON.stringify({ message: "❌ Invalid Email or Password!" }));
       }
 
       res.writeHead(200, { "Content-Type": "application/json" });
@@ -115,9 +110,7 @@ const server = http.createServer(async (req, res) => {
 
       if (existing) {
         res.writeHead(409, { "Content-Type": "application/json" });
-        return res.end(
-          JSON.stringify({ message: "⚠️ Subject already exists!" })
-        );
+        return res.end(JSON.stringify({ message: "⚠️ Subject already exists!" }));
       }
 
       const result = await subjects.insertOne({
@@ -133,6 +126,38 @@ const server = http.createServer(async (req, res) => {
           insertedId: result.insertedId,
         })
       );
+    }
+
+    // ===================================================
+    // ⭐ EDIT SUBJECT
+    // ===================================================
+    else if (req.method === "PUT" && req.url.startsWith("/api/admin/subjects/")) {
+      const id = req.url.split("/")[4];
+      const data = await parseBody();
+
+      try {
+        const result = await db.collection("subjects").updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              name: data.name.trim().toLowerCase(),
+              description: data.description,
+              updatedAt: new Date(),
+            },
+          }
+        );
+
+        if (result.matchedCount === 0) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "✏️ Subject updated!" }));
+      } catch {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "⚠️ Invalid subject ID!" }));
+      }
     }
 
     // ===================================================
@@ -155,9 +180,7 @@ const server = http.createServer(async (req, res) => {
       const id = req.url.split("/")[4];
 
       try {
-        const result = await db
-          .collection("subjects")
-          .deleteOne({ _id: new ObjectId(id) });
+        const result = await db.collection("subjects").deleteOne({ _id: new ObjectId(id) });
 
         if (result.deletedCount === 0) {
           res.writeHead(404, { "Content-Type": "application/json" });
@@ -198,6 +221,40 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ===================================================
+    // ⭐ EDIT QUESTION
+    // ===================================================
+    else if (req.method === "PUT" && req.url.startsWith("/api/admin/questions/")) {
+      const id = req.url.split("/")[3];
+      const data = await parseBody();
+
+      try {
+        const result = await db.collection("questions").updateOne(
+          { _id: new ObjectId(id) },
+          {
+            $set: {
+              question: data.question,
+              options: data.options,
+              correctAnswer: data.correctAnswer,
+              subjectId: data.subjectId,
+              updatedAt: new Date(),
+            },
+          }
+        );
+
+        if (result.matchedCount === 0) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "❌ Question not found!" }));
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "✏️ Question updated!" }));
+      } catch {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "⚠️ Invalid question ID!" }));
+      }
+    }
+
+    // ===================================================
     // GET ALL QUESTIONS
     // ===================================================
     else if (req.method === "GET" && req.url === "/api/admin/questions") {
@@ -219,10 +276,7 @@ const server = http.createServer(async (req, res) => {
     // ===================================================
     // DELETE QUESTION
     // ===================================================
-    else if (
-      req.method === "DELETE" &&
-      req.url.startsWith("/api/admin/questions/")
-    ) {
+    else if (req.method === "DELETE" && req.url.startsWith("/api/admin/questions/")) {
       const id = req.url.split("/")[3];
 
       try {
@@ -244,7 +298,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ===================================================
-    // ⭐ FIXED: IMPORT QUESTIONS FROM JSON (YOUR FORMAT)
+    // IMPORT QUESTIONS
     // ===================================================
     else if (
       req.method === "POST" &&
@@ -256,14 +310,8 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ message: "No file uploaded" }));
           }
-          const subjects = await db.collection("subjects").find({}).toArray();
 
-          const subjectMap = {};
-          subjects.forEach((s) => (subjectMap[s._id.toString()] = s.name));
-
-          // JSON text
           const jsonText = req.file.buffer.toString("utf8");
-
           const json = JSON.parse(jsonText);
 
           if (!json.questions || !Array.isArray(json.questions)) {
@@ -275,11 +323,10 @@ const server = http.createServer(async (req, res) => {
             );
           }
 
-          const subjectName = json.title.toLowerCase();
+          // ========= Subject Handling ==========
+          const subjectName = json.title.trim().toLowerCase();
+          let subject = await db.collection("subjects").findOne({ name: subjectName });
 
-          let subject = await db
-            .collection("subjects")
-            .findOne({ name: subjectName });
           if (!subject) {
             const sub = await db.collection("subjects").insertOne({
               name: subjectName,
@@ -289,31 +336,81 @@ const server = http.createServer(async (req, res) => {
             subject = { _id: sub.insertedId };
           }
 
-          const formattedQuestions = json.questions.map((q) => ({
-            subjectId: subject._id.toString(),
-            subjectName: subjectMap[subject._id] || "Unknown",
-            question: q.q,
-            options: q.options,
-            correctAnswer: q.answer,
-            createdAt: new Date(),
-          }));
+          // ========= Duplicate Check ==========
+          let duplicates = 0;
+          let newQuestions = [];
 
-          const result = await db
-            .collection("questions")
-            .insertMany(formattedQuestions);
+          for (const q of json.questions) {
+            const exists = await db.collection("questions").findOne({
+              subjectId: subject._id.toString(),
+              question: q.q.trim().toLowerCase(),
+            });
+
+            if (exists) {
+              duplicates++;
+            } else {
+              newQuestions.push({
+                subjectId: subject._id.toString(),
+                question: q.q.trim().toLowerCase(),
+                options: q.options,
+                correctAnswer: q.answer,
+                createdAt: new Date(),
+              });
+            }
+          }
+
+          if (duplicates === json.questions.length) {
+            res.writeHead(409, { "Content-Type": "application/json" });
+            return res.end(
+              JSON.stringify({
+                message: "⚠️ Questions already imported!",
+                imported: 0,
+                duplicates,
+              })
+            );
+          }
+
+          const result = await db.collection("questions").insertMany(newQuestions);
 
           res.writeHead(200, { "Content-Type": "application/json" });
           return res.end(
             JSON.stringify({
               message: "📥 Questions imported successfully!",
               inserted: result.insertedCount,
+              duplicates,
             })
           );
         } catch (err) {
+          console.log("❌ Import Error:", err);
           res.writeHead(400, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ message: "Invalid JSON file!" }));
         }
       });
+    }
+
+    // ===================================================
+    // GET STATS
+    // ===================================================
+    else if (req.method === "GET" && req.url === "/api/admin/stats") {
+      try {
+        const subjectsCount = await db.collection("subjects").countDocuments();
+        const questionsCount = await db.collection("questions").countDocuments();
+        const usersCount = await db.collection("users").countDocuments();
+        const resultsCount = await db.collection("results").countDocuments();
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({
+            subjects: subjectsCount,
+            questions: questionsCount,
+            users: usersCount,
+            results: resultsCount,
+          })
+        );
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Failed to fetch stats" }));
+      }
     }
 
     // ===================================================

@@ -5,7 +5,7 @@ export default function Sidebar() {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="logo">QZ</div>
+        <div className="logo">SM</div>
         <div className="brand-name">Quiz Admin</div>
       </div>
 
