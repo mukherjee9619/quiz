@@ -1,0 +1,556 @@
+{
+  "id": "fundamentals",
+  "title": "Fundamental of Computer",
+  "questions": [
+    {
+      "id": "f1",
+      "q": "Which one is an output device?",
+      "options": [
+        "Keyboard",
+        "Monitor",
+        "Mouse",
+        "Scanner"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f2",
+      "q": "CPU stands for?",
+      "options": [
+        "Central Process Unit",
+        "Central Processing Unit",
+        "Computer Personal Unit",
+        "Control Processing Unit"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f3",
+      "q": "Which is the brain of the computer?",
+      "options": [
+        "RAM",
+        "CPU",
+        "Hard Disk",
+        "Monitor"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f4",
+      "q": "Which is a volatile memory?",
+      "options": [
+        "ROM",
+        "SSD",
+        "RAM",
+        "Hard Disk"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "f5",
+      "q": "Which device is used for printing?",
+      "options": [
+        "Monitor",
+        "Printer",
+        "Keyboard",
+        "Speaker"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f6",
+      "q": "Which is NOT an input device?",
+      "options": [
+        "Mouse",
+        "Keyboard",
+        "Scanner",
+        "Projector"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f7",
+      "q": "Which part stores data permanently?",
+      "options": [
+        "RAM",
+        "ROM",
+        "Cache",
+        "Hard Disk"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f8",
+      "q": "Full form of ALU?",
+      "options": [
+        "Arithmetic and Logic Unit",
+        "Application Logical Unit",
+        "Advanced Logic Unit",
+        "Arithmetic Large Unit"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f9",
+      "q": "Which is an example of system software?",
+      "options": [
+        "MS Word",
+        "Windows OS",
+        "Chrome",
+        "Photoshop"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f10",
+      "q": "What does GUI stand for?",
+      "options": [
+        "General User Interaction",
+        "Graphical User Interface",
+        "Global Uniform Interface",
+        "Graphics Utility Interface"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f11",
+      "q": "Which device is used for storing data?",
+      "options": [
+        "RAM",
+        "Hard Disk",
+        "Keyboard",
+        "Mouse"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f12",
+      "q": "1 Byte = ?",
+      "options": [
+        "4 bits",
+        "8 bits",
+        "16 bits",
+        "32 bits"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f13",
+      "q": "Which is NOT an operating system?",
+      "options": [
+        "Windows",
+        "Linux",
+        "Python",
+        "macOS"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "f14",
+      "q": "Which device shows visual output?",
+      "options": [
+        "Speaker",
+        "Monitor",
+        "Keyboard",
+        "Plotter"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f15",
+      "q": "What is the full form of USB?",
+      "options": [
+        "Universal System Bus",
+        "Universal Serial Bus",
+        "Unique Serial Bus",
+        "Unified System Base"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f16",
+      "q": "Which memory is permanent?",
+      "options": [
+        "RAM",
+        "Cache",
+        "ROM",
+        "Registers"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "f17",
+      "q": "Which storage has the largest capacity?",
+      "options": [
+        "KB",
+        "MB",
+        "GB",
+        "TB"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f18",
+      "q": "Which part holds the instructions for booting?",
+      "options": [
+        "RAM",
+        "ROM",
+        "CPU",
+        "GPU"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f19",
+      "q": "Which is NOT a programming language?",
+      "options": [
+        "Python",
+        "Java",
+        "C++",
+        "Google"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f20",
+      "q": "Speed of CPU is measured in?",
+      "options": [
+        "GHz",
+        "MB",
+        "GB",
+        "Pixels"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f21",
+      "q": "What is used to store BIOS?",
+      "options": [
+        "RAM",
+        "SSD",
+        "ROM",
+        "HDD"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "f22",
+      "q": "Which is NOT a type of computer?",
+      "options": [
+        "Mini",
+        "Macro",
+        "Micro",
+        "Super"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f23",
+      "q": "Which device converts digital signals to audio?",
+      "options": [
+        "Modem",
+        "Sound Card",
+        "CPU",
+        "GPU"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f24",
+      "q": "Which port is used for a pen drive?",
+      "options": [
+        "VGA",
+        "USB",
+        "HDMI",
+        "LAN"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f25",
+      "q": "Full form of HDD?",
+      "options": [
+        "Heavy Disk Drive",
+        "Hard Disk Drive",
+        "Hybrid Disk Drive",
+        "High Data Device"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f26",
+      "q": "LAN stands for?",
+      "options": [
+        "Local Area Network",
+        "Large Area Network",
+        "Loss Area Network",
+        "Logical Access Node"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f27",
+      "q": "Which is NOT a storage device?",
+      "options": [
+        "SSD",
+        "RAM",
+        "HDD",
+        "DVD"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f28",
+      "q": "Which is an input device?",
+      "options": [
+        "Printer",
+        "Keyboard",
+        "Monitor",
+        "Speaker"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f29",
+      "q": "What does WWW stand for?",
+      "options": [
+        "World Wide Web",
+        "World Wide Win",
+        "Web Wide World",
+        "Wide World Web"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f30",
+      "q": "Which is the fastest memory?",
+      "options": [
+        "RAM",
+        "Cache",
+        "Hard Disk",
+        "DVD"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f31",
+      "q": "Which of these is an example of application software?",
+      "options": [
+        "Windows",
+        "MS Word",
+        "BIOS",
+        "Linux"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f32",
+      "q": "Binary system uses which digits?",
+      "options": [
+        "0 and 1",
+        "1 and 2",
+        "0 and 2",
+        "2 and 3"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f33",
+      "q": "Which unit measures monitor clarity?",
+      "options": [
+        "Hz",
+        "MB",
+        "Pixels",
+        "RPM"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "f34",
+      "q": "Which memory is temporary?",
+      "options": [
+        "HDD",
+        "RAM",
+        "SSD",
+        "ROM"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f35",
+      "q": "Full form of PDF?",
+      "options": [
+        "Portable Document Format",
+        "Printed Data File",
+        "Portable Digital File",
+        "Program Document File"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f36",
+      "q": "Which device is used to connect Internet?",
+      "options": [
+        "Speaker",
+        "Modem",
+        "Printer",
+        "Monitor"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f37",
+      "q": "What type of device is a mouse?",
+      "options": [
+        "Input",
+        "Output",
+        "Storage",
+        "Processing"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f38",
+      "q": "Which is NOT a computer generation?",
+      "options": [
+        "First",
+        "Second",
+        "Fourth",
+        "Seventh"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f39",
+      "q": "Which is used for long-term storage?",
+      "options": [
+        "Cache",
+        "Registers",
+        "RAM",
+        "Hard Disk"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f40",
+      "q": "Which device shows audio output?",
+      "options": [
+        "Speaker",
+        "Monitor",
+        "Mouse",
+        "Projector"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f41",
+      "q": "Which is a portable computer?",
+      "options": [
+        "Laptop",
+        "Desktop",
+        "Server",
+        "Mainframe"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f42",
+      "q": "Which key is NOT on a keyboard?",
+      "options": [
+        "Shift",
+        "Control",
+        "Alt",
+        "Laser"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "f43",
+      "q": "Which allows direct communication on networks?",
+      "options": [
+        "Router",
+        "Modem",
+        "Switch",
+        "Projector"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f44",
+      "q": "Which part performs calculations?",
+      "options": [
+        "ALU",
+        "RAM",
+        "Monitor",
+        "HDD"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f45",
+      "q": "What is the full form of IP?",
+      "options": [
+        "Internet Process",
+        "Internet Protocol",
+        "Internal Program",
+        "Internal Protocol"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f46",
+      "q": "Which device reads barcodes?",
+      "options": [
+        "Scanner",
+        "OCR",
+        "Barcode Reader",
+        "Laser Printer"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "f47",
+      "q": "What is phishing?",
+      "options": [
+        "Fish farming",
+        "Hacking method",
+        "Typing error",
+        "Software update"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "f48",
+      "q": "Which is used to protect a network?",
+      "options": [
+        "Firewall",
+        "Antivirus",
+        "Router",
+        "Switch"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f49",
+      "q": "Which file format is executable?",
+      "options": [
+        ".exe",
+        ".doc",
+        ".jpg",
+        ".pdf"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "f50",
+      "q": "Which number system uses base 16?",
+      "options": [
+        "Decimal",
+        "Binary",
+        "Hexadecimal",
+        "Octal"
+      ],
+      "answer": 2
+    }
+  ]
+}

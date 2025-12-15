@@ -1,0 +1,307 @@
+{
+  "id": "express",
+  "title": "EXPRESS",
+  "questions": [
+  {
+    "id": "ex1",
+    "q": "Express.js is built on top of which technology?",
+    "options": ["Django", "Node.js", "Laravel", "Flask"],
+    "answer": 1
+  },
+  {
+    "id": "ex2",
+    "q": "Which command installs Express globally?",
+    "options": ["npm install express -g", "npm get express", "node install express", "install express"],
+    "answer": 0
+  },
+  {
+    "id": "ex3",
+    "q": "Express is used to build ____.",
+    "options": ["Operating systems", "Server-side applications", "Mobile apps", "Front-end UI"],
+    "answer": 1
+  },
+  {
+    "id": "ex4",
+    "q": "What does app.get() do?",
+    "options": ["Handles POST request", "Handles GET request", "Creates a database", "Starts server"],
+    "answer": 1
+  },
+  {
+    "id": "ex5",
+    "q": "Which method starts the Express server?",
+    "options": ["app.start()", "app.listen()", "express()", "app.begin()"],
+    "answer": 1
+  },
+  {
+    "id": "ex6",
+    "q": "app.use() is used for ____.",
+    "options": ["Define routes", "Register middleware", "Connect database", "Stop server"],
+    "answer": 1
+  },
+  {
+    "id": "ex7",
+    "q": "Which one is a built-in middleware?",
+    "options": ["express.json()", "express.render()", "express.http()", "express.file()"],
+    "answer": 0
+  },
+  {
+    "id": "ex8",
+    "q": "Which middleware parses URL encoded data?",
+    "options": ["express.urlencoded()", "express.raw()", "express.static()", "url.parse()"],
+    "answer": 0
+  },
+  {
+    "id": "ex9",
+    "q": "What does express.static() do?",
+    "options": ["Serves static files", "Creates routes", "Adds DB connection", "Stops middleware"],
+    "answer": 0
+  },
+  {
+    "id": "ex10",
+    "q": "Which HTTP method is used to update existing data?",
+    "options": ["GET", "POST", "PUT", "TRACE"],
+    "answer": 2
+  },
+  {
+    "id": "ex11",
+    "q": "Express router is created using:",
+    "options": ["express.Route()", "express.Router()", "express.createRouter()", "app.NewRouter()"],
+    "answer": 1
+  },
+  {
+    "id": "ex12",
+    "q": "What is middleware?",
+    "options": ["Function run between request & response", "Function that deletes data", "Function that restarts server", "None"],
+    "answer": 0
+  },
+  {
+    "id": "ex13",
+    "q": "404 error is handled using which middleware?",
+    "options": ["Global error handler", "NotFoundRouter", "Default handler", "ClientErrorMiddleware"],
+    "answer": 0
+  },
+  {
+    "id": "ex14",
+    "q": "Which status code indicates success?",
+    "options": ["404", "200", "500", "403"],
+    "answer": 1
+  },
+  {
+    "id": "ex15",
+    "q": "Which status means 'Server error'?",
+    "options": ["200", "304", "500", "201"],
+    "answer": 2
+  },
+  {
+    "id": "ex16",
+    "q": "Which method sends JSON response?",
+    "options": ["res.sendFile()", "res.json()", "res.html()", "res.render()"],
+    "answer": 1
+  },
+  {
+    "id": "ex17",
+    "q": "Which command initializes Node project?",
+    "options": ["npm init", "node init", "express init", "npm start"],
+    "answer": 0
+  },
+  {
+    "id": "ex18",
+    "q": "Which Express feature supports template engines?",
+    "options": ["app.view()", "app.set()", "app.engine()", "app.route()"],
+    "answer": 2
+  },
+  {
+    "id": "ex19",
+    "q": "Which template engine is common with Express?",
+    "options": ["EJS", "Jinja", "Thymeleaf", "Pug"],
+    "answer": 3
+  },
+  {
+    "id": "ex20",
+    "q": "Which object contains route parameters?",
+    "options": ["req.query", "req.params", "req.body", "req.files"],
+    "answer": 1
+  },
+  {
+    "id": "ex21",
+    "q": "Which object contains form data?",
+    "options": ["req.body", "req.forms", "req.data", "req.input"],
+    "answer": 0
+  },
+  {
+    "id": "ex22",
+    "q": "Which middleware is required to parse JSON?",
+    "options": ["express.urlencoded()", "express.static()", "express.json()", "express.cookie()"],
+    "answer": 2
+  },
+  {
+    "id": "ex23",
+    "q": "Which library is commonly used with Express for MongoDB?",
+    "options": ["Mongoose", "Sequelize", "SQLite", "PostgresSQL"],
+    "answer": 0
+  },
+  {
+    "id": "ex24",
+    "q": "Which method is used to redirect?",
+    "options": ["res.redirect()", "res.go()", "res.transfer()", "res.path()"],
+    "answer": 0
+  },
+  {
+    "id": "ex25",
+    "q": "To send a file you use:",
+    "options": ["res.send()", "res.file()", "res.sendFile()", "res.static()"],
+    "answer": 2
+  },
+
+  {
+    "id": "ex26",
+    "q": "Route parameters are prefixed with:",
+    "options": ["%", "$", ":", "@@"],
+    "answer": 2
+  },
+  {
+    "id": "ex27",
+    "q": "Express is:",
+    "options": ["Synchronous", "Asynchronous", "Blocking", "Compiler"],
+    "answer": 1
+  },
+  {
+    "id": "ex28",
+    "q": "What does next() do?",
+    "options": ["Stops middleware", "Moves to next middleware", "Ends request", "Starts server"],
+    "answer": 1
+  },
+  {
+    "id": "ex29",
+    "q": "Which command installs Express locally?",
+    "options": ["npm install express", "express install", "install express", "node add express"],
+    "answer": 0
+  },
+  {
+    "id": "ex30",
+    "q": "What is the default Express port?",
+    "options": ["80", "3000", "5000", "8000"],
+    "answer": 1
+  },
+  {
+    "id": "ex31",
+    "q": "Which is NOT an HTTP method?",
+    "options": ["GET", "POST", "PATCH", "FETCH"],
+    "answer": 3
+  },
+  {
+    "id": "ex32",
+    "q": "Which Express method groups routes?",
+    "options": ["app.route()", "app.group()", "app.bind()", "app.merge()"],
+    "answer": 0
+  },
+  {
+    "id": "ex33",
+    "q": "req.query values come from:",
+    "options": ["URL parameters", "Search query ?a=1", "Cookies", "Headers"],
+    "answer": 1
+  },
+  {
+    "id": "ex34",
+    "q": "Which middleware handles errors?",
+    "options": ["four-argument function", "two-argument function", "one-argument function", "async function only"],
+    "answer": 0
+  },
+  {
+    "id": "ex35",
+    "q": "Which Express function renders a template?",
+    "options": ["res.sendHTML()", "res.html()", "res.render()", "res.template()"],
+    "answer": 2
+  },
+  {
+    "id": "ex36",
+    "q": "Which module is required to create Express app?",
+    "options": ["require('http')", "require('fs')", "require('express')", "require('path')"],
+    "answer": 2
+  },
+  {
+    "id": "ex37",
+    "q": "CORS middleware is used for:",
+    "options": ["Security", "Cross-origin requests", "Speed", "Cookies"],
+    "answer": 1
+  },
+  {
+    "id": "ex38",
+    "q": "Helmet middleware is used for:",
+    "options": ["Security headers", "Logging", "Routing", "Testing"],
+    "answer": 0
+  },
+  {
+    "id": "ex39",
+    "q": "Morgan is used for:",
+    "options": ["File upload", "Logging HTTP requests", "Authentication", "Database"],
+    "answer": 1
+  },
+  {
+    "id": "ex40",
+    "q": "Which library is used for authentication?",
+    "options": ["Passport.js", "Bcrypt", "Morgan", "Axios"],
+    "answer": 0
+  },
+  {
+    "id": "ex41",
+    "q": "Express runs on:",
+    "options": ["Browser", "Node.js runtime", "Java JVM", "PHP server"],
+    "answer": 1
+  },
+  {
+    "id": "ex42",
+    "q": "What do we export using module.exports?",
+    "options": ["Routes", "Views", "Static files", "None"],
+    "answer": 0
+  },
+  {
+    "id": "ex43",
+    "q": "Which function handles unmatched routes?",
+    "options": ["404 middleware", "NoRoute()", "RouteError()", "NotFound()"],
+    "answer": 0
+  },
+  {
+    "id": "ex44",
+    "q": "Which is used for environment variables?",
+    "options": ["dotenv", "express-env", "config.json", "env.js"],
+    "answer": 0
+  },
+  {
+    "id": "ex45",
+    "q": "Which Express method chains route actions?",
+    "options": ["app.chain()", "app.methods()", "router.route()", "router.bind()"],
+    "answer": 2
+  },
+  {
+    "id": "ex46",
+    "q": "To get headers from user request:",
+    "options": ["req.headers", "req.h", "req.get()", "headers.get()"],
+    "answer": 0
+  },
+  {
+    "id": "ex47",
+    "q": "Cookie parser middleware is:",
+    "options": ["cookieParser()", "express.cookie()", "cookie()", "http.cookie()"],
+    "answer": 0
+  },
+  {
+    "id": "ex48",
+    "q": "How to define a POST route?",
+    "options": ["app.submit()", "app.post()", "app.send()", "app.create()"],
+    "answer": 1
+  },
+  {
+    "id": "ex49",
+    "q": "res.status() is used to:",
+    "options": ["Send response", "Set status code", "Set cookies", "Clear cache"],
+    "answer": 1
+  },
+  {
+    "id": "ex50",
+    "q": "Express is classified as a ____ framework.",
+    "options": ["Full-stack", "Back-end", "Minimalist web", "CSS"],
+    "answer": 2
+  }
+]
+}

@@ -1,0 +1,306 @@
+{
+  "id": "react",
+  "title": "REACT",
+  "questions": [
+    {
+      "id": "REACT-1",
+      "q": "What is React?",
+      "options": ["A backend framework", "A JavaScript library for building UI", "A CSS library", "A database engine"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-2",
+      "q": "Who developed React?",
+      "options": ["Google", "Facebook (Meta)", "Microsoft", "Twitter"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-3",
+      "q": "React uses which language extension?",
+      "options": ["TSX", "JSX", "JSL", "ReactX"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-4",
+      "q": "What is the virtual DOM?",
+      "options": ["Browser DOM", "Representation of UI in memory", "Database structure", "Server API"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-5",
+      "q": "Which method is used to create components?",
+      "options": ["createComponent()", "renderComponent()", "Functional or Class components", "Component.new()"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-6",
+      "q": "React components must return…?",
+      "options": ["Strings only", "Objects only", "JSX elements", "Numbers"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-7",
+      "q": "Which hook is used for state management?",
+      "options": ["useData()", "useEvent()", "useState()", "useStore()"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-8",
+      "q": "Which hook runs after every render?",
+      "options": ["useRender()", "useState()", "useEffect()", "usePost()"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-9",
+      "q": "JSX stands for:",
+      "options": ["JavaScript XML", "Java Syntax Extension", "JSON XML", "JavaScript Extension File"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-10",
+      "q": "Props in React are:",
+      "options": ["Immutable", "Mutable", "Global variables", "Static values only"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-11",
+      "q": "State in React is:",
+      "options": ["Read-only", "Mutable", "Only in class components", "A CSS property"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-12",
+      "q": "Which hook replaces lifecycle methods?",
+      "options": ["useState", "useEffect", "useProps", "useClass"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-13",
+      "q": "Which method renders React components?",
+      "options": ["renderDOM()", "ReactDOM.render()", "DOM.react()", "react.mount()"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-14",
+      "q": "How many elements can a component return?",
+      "options": ["Only one parent element", "Unlimited", "Zero", "Only two"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-15",
+      "q": "Which symbol is used for fragments?",
+      "options": ["<> </>", "[ ]", "{{ }}", "<frag></frag>"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-16",
+      "q": "Which hook is used for side effects?",
+      "options": ["useEffect()", "useSide()", "useImpact()", "useRun()"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-17",
+      "q": "Keys in React must be:",
+      "options": ["Unique among siblings", "Same everywhere", "Random numbers", "Alphabetical"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-18",
+      "q": "Which hook is used for performance optimization?",
+      "options": ["useSpeed()", "useMemo()", "useCache()", "useOptimize()"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-19",
+      "q": "Which function updates state in useState?",
+      "options": ["set()", "updateState()", "setState()", "Setter function returned by useState"],
+      "answer": 3
+    },
+    {
+      "id": "REACT-20",
+      "q": "React Router is used for:",
+      "options": ["State management", "Styling", "Routing/navigation", "Database connection"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-21",
+      "q": "What is a pure component?",
+      "options": ["A component without props", "A component that prevents unnecessary re-renders", "A component with only JSX", "A component with no state"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-22",
+      "q": "Which hook is used to access previous props/state indirectly?",
+      "options": ["usePrev()", "useEffect()", "useRef()", "useBefore()"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-23",
+      "q": "Which of these is NOT a hook?",
+      "options": ["useCallback", "useReducer", "useProps", "useContext"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-24",
+      "q": "Context API is used to avoid:",
+      "options": ["API calls", "Prop drilling", "useEffect", "Class components"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-25",
+      "q": "React uses which algorithm to compare virtual DOM?",
+      "options": ["Binary search", "Diffing algorithm", "Linear scan", "Hash mapping"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-26",
+      "q": "Which hook manages complex state?",
+      "options": ["useState", "useEffect", "useReducer", "useMemo"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-27",
+      "q": "React.StrictMode is used for:",
+      "options": ["Performance", "Highlighting potential issues", "Faster rendering", "Security"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-28",
+      "q": "Which hook is used for callback memoization?",
+      "options": ["useMemo", "useCallback", "useReducer", "useRef"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-29",
+      "q": "Which lifecycle method is replaced by useEffect?",
+      "options": ["componentDidMount", "componentWillThrown", "componentMade", "componentLoaded"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-30",
+      "q": "Which library is commonly used with React?",
+      "options": ["Redux", "Laravel", "Django", "Bootstrap 2"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-31",
+      "q": "JSX must return how many root elements?",
+      "options": ["1", "2", "Unlimited", "None"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-32",
+      "q": "What is default export?",
+      "options": ["Multiple exports", "Single export", "Custom hooks", "Router component"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-33",
+      "q": "Which hook stores values across renders?",
+      "options": ["useEffect", "useState", "useRef", "useKeep"],
+      "answer": 2
+    },
+    {
+      "id": "REACT-34",
+      "q": "Functional components are:",
+      "options": ["Stateless only", "Stateful using hooks", "Class only", "Not allowed"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-35",
+      "q": "Which file is the React entry point?",
+      "options": ["App.js", "index.js", "Main.js", "Root.js"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-36",
+      "q": "What does ReactDOM.createRoot() do?",
+      "options": ["Creates new CSS", "Creates a root for the app", "Renders hooks", "Runs effects"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-37",
+      "q": "Suspense in React is used for:",
+      "options": ["Animations", "Loading components lazily", "Error handling", "Styling"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-38",
+      "q": "Which hook is used for context values?",
+      "options": ["useContext()", "useState()", "useEffect()", "useProps()"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-39",
+      "q": "React portals allow components to:",
+      "options": ["Render outside root DOM", "Render faster", "Store data", "Use state globally"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-40",
+      "q": "Lazy loading is done using:",
+      "options": ["React.lazy()", "React.load()", "JSX.lazy()", "useLazy()"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-41",
+      "q": "What is reconciliation?",
+      "options": ["Routing", "Comparing virtual DOM", "Creating CSS", "Error handling"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-42",
+      "q": "Which hook handles browser events?",
+      "options": ["useEvent()", "JS events inside JSX", "useBrowser()", "useClick()"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-43",
+      "q": "Which of the following is true?",
+      "options": ["React changes real DOM directly", "React updates virtual DOM first", "React uses SQL", "React is server-only"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-44",
+      "q": "Which hook runs only on first render when dependency array is empty?",
+      "options": ["useAlways()", "useEffect()", "useRef()", "useStart()"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-45",
+      "q": "What is a controlled component?",
+      "options": ["Input managed by React state", "Input managed by browser", "Static input", "Hidden element"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-46",
+      "q": "Which tool is used to build production React apps?",
+      "options": ["npm dev", "webpack", "python", "php artisan"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-47",
+      "q": "PropTypes are used for:",
+      "options": ["Type checking", "Routing", "Building UI", "Authentication"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-48",
+      "q": "Which method catches render errors?",
+      "options": ["componentDidCatch()", "catch()", "error()", "useCatch()"],
+      "answer": 0
+    },
+    {
+      "id": "REACT-49",
+      "q": "Why is key important in lists?",
+      "options": ["Speed", "Identify elements uniquely", "CSS styling", "State control"],
+      "answer": 1
+    },
+    {
+      "id": "REACT-50",
+      "q": "Which package installs React?",
+      "options": ["npm install react react-dom", "npm add react-kit", "npm install jsx", "npm react"],
+      "answer": 0
+    }
+  ]
+}

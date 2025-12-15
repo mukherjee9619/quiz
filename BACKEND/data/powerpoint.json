@@ -1,0 +1,314 @@
+{
+  "id": "powerpoint",
+  "title": "POWERPOINT",
+  "questions": [
+    {
+      "id": "POWERPOINT-1",
+      "q": "PowerPoint is mainly used for:",
+      "options": ["Word processing", "Creating presentations", "Database management", "Programming"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-2",
+      "q": "What is the default file extension for PowerPoint presentations?",
+      "options": [".pptx", ".docx", ".xlsx", ".ppj"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-3",
+      "q": "Which key starts the slideshow from the beginning?",
+      "options": ["F5", "F2", "Ctrl + S", "Shift + F5"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-4",
+      "q": "Which view displays all slides as thumbnails?",
+      "options": ["Slide Sorter View", "Reading View", "Outline View", "Notes Page View"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-5",
+      "q": "Which feature allows text to appear letter-by-letter?",
+      "options": ["Slide Transition", "Animation", "Motion Path", "Morph"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-6",
+      "q": "Where do you insert a new slide?",
+      "options": ["Insert → New Slide", "File → Add", "Design → Slide", "View → New"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-7",
+      "q": "Which shortcut duplicates a slide?",
+      "options": ["Ctrl + D", "Ctrl + P", "Ctrl + Shift + V", "Ctrl + Alt + D"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-8",
+      "q": "What is a placeholder?",
+      "options": ["A text style", "A preformatted container for content", "A slide transition", "A theme color"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-9",
+      "q": "Which tab contains slide transitions?",
+      "options": ["Design", "Animations", "Transitions", "Slide Show"],
+      "answer": 2
+    },
+    {
+      "id": "POWERPOINT-10",
+      "q": "Which feature records narration and timings?",
+      "options": ["Record Slide Show", "Presenter View", "Slide Master", "Morph"],
+      "answer": 0
+    },
+
+    {
+      "id": "POWERPOINT-11",
+      "q": "Which view helps you write notes for presenters?",
+      "options": ["Notes Page View", "Outline View", "Slide Sorter", "Grid View"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-12",
+      "q": "Which element controls global styles for the presentation?",
+      "options": ["Design Templates", "Slide Master", "Animation Pane", "Transition Pane"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-13",
+      "q": "Which is NOT a slide layout?",
+      "options": ["Title Slide", "Two Content", "Comparison", "Master Table"],
+      "answer": 3
+    },
+    {
+      "id": "POWERPOINT-14",
+      "q": "Which menu allows you to insert charts?",
+      "options": ["Home", "Insert", "View", "Review"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-15",
+      "q": "Which key starts slideshow from the current slide?",
+      "options": ["Shift + F5", "F5", "Ctrl + F5", "Alt + S"],
+      "answer": 0
+    },
+
+    {
+      "id": "POWERPOINT-16",
+      "q": "PowerPoint belongs to which software suite?",
+      "options": ["Adobe", "Microsoft Office", "Google Tools", "Oracle"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-17",
+      "q": "Which file format supports editable PowerPoint?",
+      "options": [".pdf", ".pptx", ".jpg", ".mp4"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-18",
+      "q": "Which feature converts bullet points to SmartArt?",
+      "options": ["Design Ideas", "Smart Graphics", "Convert to SmartArt", "Shape Tool"],
+      "answer": 2
+    },
+    {
+      "id": "POWERPOINT-19",
+      "q": "What is the purpose of the Animation Pane?",
+      "options": ["Preview animations", "Record presentation", "Zoom slides", "Change layout"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-20",
+      "q": "Which feature removes the background of an image?",
+      "options": ["Crop Tool", "Remove Background", "Picture Styles", "Compress Picture"],
+      "answer": 1
+    },
+
+    {
+      "id": "POWERPOINT-21",
+      "q": "Which file type exports a slide as an image?",
+      "options": ["JPG", "PPT", "DOCX", "XLS"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-22",
+      "q": "Which option helps align objects evenly?",
+      "options": ["Gridlines", "Align Tool", "Layout Tool", "Sort Tool"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-23",
+      "q": "Where do you change slide size?",
+      "options": ["View → Resize", "File → Page Setup", "Design → Slide Size", "Insert → Slide"],
+      "answer": 2
+    },
+    {
+      "id": "POWERPOINT-24",
+      "q": "Which format is used for PowerPoint templates?",
+      "options": [".pptt", ".pptm", ".potx", ".ppx"],
+      "answer": 2
+    },
+    {
+      "id": "POWERPOINT-25",
+      "q": "Which transition is smooth and modern?",
+      "options": ["Wipe", "Morph", "Cut", "Push"],
+      "answer": 1
+    },
+
+    {
+      "id": "POWERPOINT-26",
+      "q": "Which key deletes a slide?",
+      "options": ["Ctrl + Delete", "Delete", "Backspace only", "Shift + Delete"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-27",
+      "q": "Which feature adds movement to slide objects?",
+      "options": ["Transitions", "Animations", "Themes", "Placeholders"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-28",
+      "q": "Presenter View displays:",
+      "options": ["Only slides", "Slides, notes, and timer", "Audience comments", "Thumbnails only"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-29",
+      "q": "Which tab is used to add audio?",
+      "options": ["Insert", "Design", "Review", "Transitions"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-30",
+      "q": "Which feature automatically suggests slide designs?",
+      "options": ["SmartArt", "Design Ideas", "Format Painter", "Clipboard"],
+      "answer": 1
+    },
+
+    {
+      "id": "POWERPOINT-31",
+      "q": "PowerPoint saves auto-recovery information every:",
+      "options": ["1 minute", "5 minutes", "10 minutes", "15 minutes"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-32",
+      "q": "Which shape tool creates arrows?",
+      "options": ["Callout", "Block Arrows", "Flowchart", "Stars"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-33",
+      "q": "Which view helps rearrange slides easily?",
+      "options": ["Outline View", "Slide Sorter View", "Notes View", "Reading View"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-34",
+      "q": "What is the shortcut for a new slide?",
+      "options": ["Ctrl + N", "Ctrl + M", "Ctrl + Shift + N", "Alt + M"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-35",
+      "q": "Which menu controls text formatting?",
+      "options": ["Home", "Insert", "Review", "View"],
+      "answer": 0
+    },
+
+    {
+      "id": "POWERPOINT-36",
+      "q": "What does Slide Master control?",
+      "options": ["Only one slide", "All slides in the presentation", "Audio settings", "Zoom settings"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-37",
+      "q": "Which option compresses media?",
+      "options": ["File → Compress Media", "View → Media Tools", "Design → Compress", "Insert → Media"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-38",
+      "q": "PowerPoint is best described as:",
+      "options": ["Spreadsheet software", "Presentation software", "Photo editing software", "Web development tool"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-39",
+      "q": "Which feature repeats formatting?",
+      "options": ["Copy Style", "Format Painter", "Duplicate Formatting", "Style Reset"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-40",
+      "q": "Which element is NOT part of a slide theme?",
+      "options": ["Font", "Color", "Layout", "Chart Data"],
+      "answer": 3
+    },
+
+    {
+      "id": "POWERPOINT-41",
+      "q": "Which import option inserts a video?",
+      "options": ["Insert → Media → Video", "Design → Video", "Format → Insert Video", "Home → Upload"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-42",
+      "q": "Slide transitions are applied to:",
+      "options": ["Objects", "Text only", "Entire slides", "Notes"],
+      "answer": 2
+    },
+    {
+      "id": "POWERPOINT-43",
+      "q": "Which view is used for printing handouts?",
+      "options": ["Reading View", "Notes Page", "Handout Master", "Slide Show"],
+      "answer": 2
+    },
+    {
+      "id": "POWERPOINT-44",
+      "q": "Which tool helps align text boxes?",
+      "options": ["SmartArt", "Align Tool", "Format Painter", "Design Ideas"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-45",
+      "q": "Which option protects a presentation?",
+      "options": ["Review → Protect Presentation", "Insert → Secure", "Home → Lock", "View → Protection"],
+      "answer": 0
+    },
+
+    {
+      "id": "POWERPOINT-46",
+      "q": "Which file exports video?",
+      "options": [".mp4", ".docx", ".pptx", ".xls"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-47",
+      "q": "Which animation makes text appear from above?",
+      "options": ["Fly In", "Fade", "Zoom", "Bounce"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-48",
+      "q": "What does the Rehearse Timings feature do?",
+      "options": ["Checks grammar", "Times slide transitions", "Edits speaker notes", "Creates duplicates"],
+      "answer": 1
+    },
+    {
+      "id": "POWERPOINT-49",
+      "q": "Which option inserts tables?",
+      "options": ["Insert → Table", "Design → Table", "Home → Insert Table", "View → Tables"],
+      "answer": 0
+    },
+    {
+      "id": "POWERPOINT-50",
+      "q": "Which shortcut opens the print dialog?",
+      "options": ["Ctrl + P", "Ctrl + Shift + P", "Ctrl + O", "Alt + P"],
+      "answer": 0
+    }
+  ]
+}

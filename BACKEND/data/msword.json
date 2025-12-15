@@ -1,0 +1,556 @@
+{
+  "id": "microsoft_word",
+  "title": "MS Word",
+  "questions": [
+    {
+      "id": "w1",
+      "q": "Which file extension is used by MS Word?",
+      "options": [
+        ".docx",
+        ".xls",
+        ".ppt",
+        ".pdf"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w2",
+      "q": "Shortcut for bold text is?",
+      "options": [
+        "Ctrl+B",
+        "Ctrl+I",
+        "Ctrl+U",
+        "Ctrl+S"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w3",
+      "q": "MS Word is a ____.",
+      "options": [
+        "Spreadsheet",
+        "Word Processor",
+        "Database",
+        "Browser"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w4",
+      "q": "Which key is used to open the Save As dialog?",
+      "options": [
+        "F1",
+        "F5",
+        "F12",
+        "Shift+F1"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "w5",
+      "q": "What does Ctrl+U do?",
+      "options": [
+        "Underline",
+        "Uppercase",
+        "Undo",
+        "Update"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w6",
+      "q": "Which menu contains 'Page Setup'?",
+      "options": [
+        "File",
+        "Insert",
+        "Layout",
+        "Home"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "w7",
+      "q": "Which feature checks spelling?",
+      "options": [
+        "AutoFix",
+        "AutoCheck",
+        "Spell Check",
+        "Review"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "w8",
+      "q": "Shortcut for copy?",
+      "options": [
+        "Ctrl+C",
+        "Ctrl+K",
+        "Ctrl+Shift+C",
+        "Alt+C"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w9",
+      "q": "Which option inserts images?",
+      "options": [
+        "Insert → Picture",
+        "Home → Image",
+        "View → Photo",
+        "Design → Media"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w10",
+      "q": "What is the default file extension of Word 2007?",
+      "options": [
+        ".doc",
+        ".docx",
+        ".txt",
+        ".rtf"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w11",
+      "q": "Which button increases font size?",
+      "options": [
+        "A↑",
+        "A↓",
+        "Font+",
+        "Text↑"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w12",
+      "q": "Which alignment aligns text to the left?",
+      "options": [
+        "Ctrl+L",
+        "Ctrl+R",
+        "Ctrl+E",
+        "Ctrl+J"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w13",
+      "q": "Header appears at the ____.",
+      "options": [
+        "Top",
+        "Bottom",
+        "Left",
+        "Right"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w14",
+      "q": "Footer appears at the ___.",
+      "options": [
+        "Top",
+        "Bottom",
+        "Left",
+        "Right"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w15",
+      "q": "Which tab contains Font group?",
+      "options": [
+        "Insert",
+        "Home",
+        "Design",
+        "View"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w16",
+      "q": "Shortcut for paste?",
+      "options": [
+        "Ctrl+P",
+        "Ctrl+V",
+        "Ctrl+Shift+V",
+        "Alt+V"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w17",
+      "q": "What is a tab stop?",
+      "options": [
+        "Cursor",
+        "Indent marker",
+        "Formatting option",
+        "Predefined stop position"
+      ],
+      "answer": 3
+    },
+    {
+      "id": "w18",
+      "q": "Track Changes is found under?",
+      "options": [
+        "Home",
+        "Review",
+        "Insert",
+        "Design"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w19",
+      "q": "Mail Merge is used for?",
+      "options": [
+        "Graphics",
+        "Address labels",
+        "Tables",
+        "Charts"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w20",
+      "q": "Shortcut for Select All?",
+      "options": [
+        "Ctrl+S",
+        "Ctrl+A",
+        "Ctrl+Shift+A",
+        "Alt+A"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w21",
+      "q": "Which key is used for Undo?",
+      "options": [
+        "Ctrl+U",
+        "Ctrl+Z",
+        "Ctrl+X",
+        "Ctrl+R"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w22",
+      "q": "Which key is used for Redo?",
+      "options": [
+        "Ctrl+Y",
+        "Ctrl+T",
+        "Ctrl+R",
+        "Ctrl+Shift+Y"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w23",
+      "q": "Bullets are used for?",
+      "options": [
+        "Tables",
+        "Lists",
+        "Styles",
+        "Themes"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w24",
+      "q": "What does Ctrl+Shift+L apply?",
+      "options": [
+        "Left align",
+        "List style",
+        "Indent",
+        "Underline"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w25",
+      "q": "Watermark can be added from?",
+      "options": [
+        "Design",
+        "Insert",
+        "Layout",
+        "Home"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w26",
+      "q": "Which option inserts a table?",
+      "options": [
+        "Insert → Table",
+        "Home → Table",
+        "Layout → Table",
+        "Design → Table"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w27",
+      "q": "Shortcut for print?",
+      "options": [
+        "Ctrl+P",
+        "Ctrl+Shift+P",
+        "Alt+P",
+        "Ctrl+Alt+P"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w28",
+      "q": "The ruler is used for?",
+      "options": [
+        "Font size",
+        "Page layout",
+        "Indents and tabs",
+        "Zoom"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "w29",
+      "q": "Which view shows how the document will look when printed?",
+      "options": [
+        "Web Layout",
+        "Print Layout",
+        "Draft",
+        "Read Mode"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w30",
+      "q": "Which tab contains Themes?",
+      "options": [
+        "Home",
+        "Insert",
+        "Design",
+        "Review"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "w31",
+      "q": "Header & Footer tools appear under?",
+      "options": [
+        "Insert",
+        "View",
+        "Design",
+        "Home"
+      ],
+      "answer": 2
+    },
+    {
+      "id": "w32",
+      "q": "Which option changes page size?",
+      "options": [
+        "Home",
+        "Layout",
+        "Insert",
+        "Tools"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w33",
+      "q": "Shortcut for Center alignment?",
+      "options": [
+        "Ctrl+E",
+        "Ctrl+L",
+        "Ctrl+J",
+        "Ctrl+R"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w34",
+      "q": "WordArt is available under?",
+      "options": [
+        "Home",
+        "Insert",
+        "Review",
+        "Layout"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w35",
+      "q": "Which option adjusts line spacing?",
+      "options": [
+        "Paragraph",
+        "Font",
+        "Insert",
+        "Design"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w36",
+      "q": "Which option finds and replaces text?",
+      "options": [
+        "Ctrl+R",
+        "Ctrl+H",
+        "Ctrl+Shift+R",
+        "Ctrl+Shift+H"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w37",
+      "q": "What is the default font in Word?",
+      "options": [
+        "Calibri",
+        "Times New Roman",
+        "Cambria",
+        "Arial"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w38",
+      "q": "What is a paragraph?",
+      "options": [
+        "Text style",
+        "Block of text separated by Enter",
+        "Page area",
+        "Section break"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w39",
+      "q": "Which key deletes one character to the right?",
+      "options": [
+        "Backspace",
+        "Delete",
+        "Ctrl+D",
+        "Shift+Delete"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w40",
+      "q": "Which feature increases the space between characters?",
+      "options": [
+        "Kerning",
+        "Leading",
+        "Indent",
+        "Tracking"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w41",
+      "q": "Which key creates a new line?",
+      "options": [
+        "Shift",
+        "Enter",
+        "Tab",
+        "Space"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w42",
+      "q": "Superscript shortcut?",
+      "options": [
+        "Ctrl+Shift+=",
+        "Ctrl+Shift+P",
+        "Ctrl++",
+        "Alt+Shift+="
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w43",
+      "q": "Subscript shortcut?",
+      "options": [
+        "Ctrl+=",
+        "Ctrl+Shift+=",
+        "Ctrl+Shift+Minus",
+        "Ctrl+Alt+="
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w44",
+      "q": "Page break shortcut?",
+      "options": [
+        "Ctrl+Enter",
+        "Ctrl+Shift+Enter",
+        "Alt+Enter",
+        "Shift+Enter"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w45",
+      "q": "Which option adds page numbers?",
+      "options": [
+        "Insert",
+        "Home",
+        "Layout",
+        "Tools"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w46",
+      "q": "Which option shows document statistics?",
+      "options": [
+        "Word Count",
+        "Review",
+        "Status Bar",
+        "Tools"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w47",
+      "q": "Which feature translates text?",
+      "options": [
+        "Review → Translate",
+        "Insert → Translate",
+        "Home → Translate",
+        "Tools → Translate"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w48",
+      "q": "Which feature compares two documents?",
+      "options": [
+        "Design",
+        "Compare",
+        "Insert",
+        "File"
+      ],
+      "answer": 1
+    },
+    {
+      "id": "w49",
+      "q": "Which option creates columns?",
+      "options": [
+        "Layout → Columns",
+        "Insert → Columns",
+        "Home → Columns",
+        "Review → Columns"
+      ],
+      "answer": 0
+    },
+    {
+      "id": "w50",
+      "q": "Which option inserts symbols?",
+      "options": [
+        "Insert → Symbol",
+        "Home → Symbol",
+        "View → Symbol",
+        "Layout → Symbol"
+      ],
+      "answer": 0
+    }
+  ]
+}
