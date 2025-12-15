@@ -60,7 +60,7 @@ export function formatQuestion(rawText, explanation = "", answer = "") {
 
   return {
     questionPart: isInvalid
-      ? "⚠ This question is incomplete due to missing code or expression."
+      ? "⚠ This question is incomplete due to missing code or expression, Please skip this question"
       : questionPart,
     codePart,
     language,

@@ -144,19 +144,21 @@ export default function Quiz() {
 
   /* ================= FORMAT QUESTION ================= */
   const q = questions[current];
+  console.log("current question:", q);
+
   const formatted = formatQuestion(
     q?.question || "",
     q?.explanation || "",
     q?.answerText || ""
   );
 
-  if (!formatted || formatted.isInvalid) {
-    return (
-      <div className="question-error-box">
-        ⚠ Question data is incomplete. Please skip.
-      </div>
-    );
-  }
+  // if (!formatted || formatted.isInvalid) {
+  //   return (
+  //     <div className="question-error-box">
+  //       ⚠ Question data is incomplete. Please skip.
+  //     </div>
+  //   );
+  // }
 
   /* ================= UI ================= */
   return (
@@ -189,16 +191,23 @@ export default function Quiz() {
           )}
 
           <div className="options">
-            {q.options.map((opt, i) => (
-              <button
-                key={i}
-                onClick={() => selectOption(i)}
-                className={answers[current] === i ? "selected" : ""}
-              >
-                {opt}
-              </button>
-            ))}
+            {formatted.isInvalid ? (
+              <div className="question-error-box">
+           
+              </div>
+            ) : (
+              q.options.map((opt, i) => (
+                <button
+                  key={i}
+                  onClick={() => selectOption(i)}
+                  className={answers[current] === i ? "selected" : ""}
+                >
+                  {opt}
+                </button>
+              ))
+            )}
           </div>
+
 
           <div className="cbt-actions">
             <button onClick={() => setCurrent(current - 1)} disabled={current === 0}>Prev</button>

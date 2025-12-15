@@ -15,7 +15,7 @@
         },
         {
             "id": "c2",
-            "q": "What will be printed?\n\n#include <stdio.h>\nint main() {\n    int a = 10, b = 20;\n    printf(\"%d\", a+++++b);\n}\n",
+            "q": "What will be printed?\n\n#include <stdio.h>\nint main() {\n    int a = 10, b = 20;\n    printf(\"%d\", a++ + ++b);\n}\n",
             "options": [
                 "30",
                 "31",
