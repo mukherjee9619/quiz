@@ -1,556 +1,469 @@
 {
-    "id": "algorithm",
-    "title": "Algorithms",
+    "category": "Algorithms",
     "questions": [
         {
             "id": "a1",
-            "q": "Time complexity of binary search?",
-            "options": [
-                "O(n)",
-                "O(log n)",
-                "O(n log n)",
-                "O(1)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity of binary search?",
+            "options": ["O(n)", "O(log n)", "O(n log n)", "O(1)"],
+            "correctAnswer": 1
         },
         {
             "id": "a2",
-            "q": "Best-case complexity of quicksort?",
-            "options": [
-                "O(n)",
-                "O(n log n)",
-                "O(n²)",
-                "O(log n)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Best-case complexity of quicksort?",
+            "options": ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+            "correctAnswer": 1
         },
         {
             "id": "a3",
-            "q": "Which algorithm uses divide and conquer?",
-            "options": [
-                "Bubble Sort",
-                "Merge Sort",
-                "Insertion Sort",
-                "Selection Sort"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which algorithm uses divide and conquer?",
+            "options": ["Bubble Sort", "Merge Sort", "Insertion Sort", "Selection Sort"],
+            "correctAnswer": 1
         },
         {
             "id": "a4",
-            "q": "Worst-case time for linear search?",
-            "options": [
-                "O(log n)",
-                "O(n)",
-                "O(n²)",
-                "O(1)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Worst-case time for linear search?",
+            "options": ["O(log n)", "O(n)", "O(n²)", "O(1)"],
+            "correctAnswer": 1
         },
         {
             "id": "a5",
-            "q": "Which sorting is stable?",
-            "options": [
-                "Quick Sort",
-                "Merge Sort",
-                "Heap Sort",
-                "Selection Sort"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which sorting is stable?",
+            "options": ["Quick Sort", "Merge Sort", "Heap Sort", "Selection Sort"],
+            "correctAnswer": 1
         },
         {
             "id": "a6",
-            "q": "Which data structure is used in BFS?",
-            "options": [
-                "Stack",
-                "Queue",
-                "Heap",
-                "Graph"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which data structure is used in BFS?",
+            "options": ["Stack", "Queue", "Heap", "Graph"],
+            "correctAnswer": 1
         },
         {
             "id": "a7",
-            "q": "Dijkstra algorithm is used to find?",
-            "options": [
-                "MST",
-                "Shortest Path",
-                "Topological Order",
-                "Cycle Detection"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Dijkstra algorithm is used to find?",
+            "options": ["MST", "Shortest Path", "Topological Order", "Cycle Detection"],
+            "correctAnswer": 1
         },
         {
             "id": "a8",
-            "q": "Which algorithm always gives optimal MST?",
-            "options": [
-                "Prim’s",
-                "Kruskal’s",
-                "Both",
-                "None"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which algorithm always gives optimal MST?",
+            "options": ["Prim’s", "Kruskal’s", "Both", "None"],
+            "correctAnswer": 2
         },
         {
             "id": "a9",
-            "q": "Time complexity of selection sort?",
-            "options": [
-                "O(log n)",
-                "O(n)",
-                "O(n²)",
-                "O(n log n)"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity of selection sort?",
+            "options": ["O(log n)", "O(n)", "O(n²)", "O(n log n)"],
+            "correctAnswer": 2
         },
         {
             "id": "a10",
-            "q": "Which is NOT a divide and conquer algorithm?",
-            "options": [
-                "Merge Sort",
-                "Quick Sort",
-                "Binary Search",
-                "Bubble Sort"
-            ],
-            "answer": 3
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which is NOT a divide and conquer algorithm?",
+            "options": ["Merge Sort", "Quick Sort", "Binary Search", "Bubble Sort"],
+            "correctAnswer": 3
         },
         {
             "id": "a11",
-            "q": "Heap sort uses which data structure?",
-            "options": [
-                "Tree",
-                "Graph",
-                "Heap",
-                "Stack"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Heap sort uses which data structure?",
+            "options": ["Tree", "Graph", "Heap", "Stack"],
+            "correctAnswer": 2
         },
         {
             "id": "a12",
-            "q": "Which is a greedy algorithm?",
-            "options": [
-                "Dijkstra",
-                "Prim",
-                "Kruskal",
-                "All"
-            ],
-            "answer": 3
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which is a greedy algorithm?",
+            "options": ["Dijkstra", "Prim", "Kruskal", "All"],
+            "correctAnswer": 3
         },
         {
             "id": "a13",
-            "q": "In-order traversal is used in?",
-            "options": [
-                "Graphs",
-                "BST",
-                "Heaps",
-                "Arrays"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "In-order traversal is used in?",
+            "options": ["Graphs", "BST", "Heaps", "Arrays"],
+            "correctAnswer": 1
         },
         {
             "id": "a14",
-            "q": "Topological sort works only on?",
-            "options": [
-                "Trees",
-                "Undirected Graphs",
-                "DAG",
-                "Complete Graph"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Topological sort works only on?",
+            "options": ["Trees", "Undirected Graphs", "DAG", "Complete Graph"],
+            "correctAnswer": 2
         },
         {
             "id": "a15",
-            "q": "Which algorithm finds MST?",
-            "options": [
-                "DFS",
-                "Dijkstra",
-                "Prim",
-                "Bellman-Ford"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which algorithm finds MST?",
+            "options": ["DFS", "Dijkstra", "Prim", "Bellman-Ford"],
+            "correctAnswer": 2
         },
         {
             "id": "a16",
-            "q": "DFS uses which data structure?",
-            "options": [
-                "Queue",
-                "Stack",
-                "Heap",
-                "Graph"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "DFS uses which data structure?",
+            "options": ["Queue", "Stack", "Heap", "Graph"],
+            "correctAnswer": 1
         },
         {
             "id": "a17",
-            "q": "Which sorting uses pivot?",
-            "options": [
-                "Bubble",
-                "Merge",
-                "Quick",
-                "Heap"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which sorting uses pivot?",
+            "options": ["Bubble", "Merge", "Quick", "Heap"],
+            "correctAnswer": 2
         },
         {
             "id": "a18",
-            "q": "Which algorithm handles negative weights?",
-            "options": [
-                "Dijkstra",
-                "Bellman-Ford",
-                "Prim",
-                "Kruskal"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which algorithm handles negative weights?",
+            "options": ["Dijkstra", "Bellman-Ford", "Prim", "Kruskal"],
+            "correctAnswer": 1
         },
         {
             "id": "a19",
-            "q": "Knapsack problem uses?",
-            "options": [
-                "Greedy",
-                "DP",
-                "Both",
-                "None"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Knapsack problem uses?",
+            "options": ["Greedy", "DP", "Both", "None"],
+            "correctAnswer": 1
         },
         {
             "id": "a20",
-            "q": "Which algorithm is NOT greedy?",
-            "options": [
-                "Dijkstra",
-                "Prim",
-                "Fractional Knapsack",
-                "0/1 Knapsack"
-            ],
-            "answer": 3
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which algorithm is NOT greedy?",
+            "options": ["Dijkstra", "Prim", "Fractional Knapsack", "0/1 Knapsack"],
+            "correctAnswer": 3
         },
         {
             "id": "a21",
-            "q": "BFS complexity?",
-            "options": [
-                "O(V)",
-                "O(V + E)",
-                "O(E²)",
-                "O(VE)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "BFS complexity?",
+            "options": ["O(V)", "O(V + E)", "O(E²)", "O(VE)"],
+            "correctAnswer": 1
         },
         {
             "id": "a22",
-            "q": "The pivot is used in which algorithm?",
-            "options": [
-                "Quick Sort",
-                "Merge Sort",
-                "Dijkstra",
-                "Prim"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "The pivot is used in which algorithm?",
+            "options": ["Quick Sort", "Merge Sort", "Dijkstra", "Prim"],
+            "correctAnswer": 0
         },
         {
             "id": "a23",
-            "q": "Which algorithm backtracks?",
-            "options": [
-                "Dijkstra",
-                "N-Queens",
-                "BFS",
-                "Heap Sort"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which algorithm backtracks?",
+            "options": ["Dijkstra", "N-Queens", "BFS", "Heap Sort"],
+            "correctAnswer": 1
         },
         {
             "id": "a24",
-            "q": "Which is the fastest average sorting algorithm?",
-            "options": [
-                "Quick Sort",
-                "Bubble Sort",
-                "Insertion Sort",
-                "Selection Sort"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which is the fastest average sorting algorithm?",
+            "options": ["Quick Sort", "Bubble Sort", "Insertion Sort", "Selection Sort"],
+            "correctAnswer": 0
         },
         {
             "id": "a25",
-            "q": "Which is NOT a graph algorithm?",
-            "options": [
-                "Prim",
-                "Kruskal",
-                "Heap Sort",
-                "Dijkstra"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Which is NOT a graph algorithm?",
+            "options": ["Prim", "Kruskal", "Heap Sort", "Dijkstra"],
+            "correctAnswer": 2
         },
         {
             "id": "a26",
-            "q": "Output?\nint x=5; x=x++ + ++x; printf(\"%d\",x);",
-            "options": [
-                "11",
-                "12",
-                "13",
-                "14"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int x=5; x=x++ + ++x; printf(\"%d\",x);",
+                "language": "c"
+            },
+            "options": ["11", "12", "13", "14"],
+            "correctAnswer": 2
         },
         {
             "id": "a27",
-            "q": "What is time complexity?\nfor(int i=1;i<n;i*=2){ }",
-            "options": [
-                "O(n)",
-                "O(log n)",
-                "O(n log n)",
-                "O(1)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "What is time complexity?\nfor(int i=1;i<n;i*=2){ }",
+            "options": ["O(n)", "O(log n)", "O(n log n)", "O(1)"],
+            "correctAnswer": 1
         },
         {
             "id": "a28",
-            "q": "Output?\nint a=3,b=4;\nprintf(\"%d\", a*b + b/a);",
-            "options": [
-                "13",
-                "14",
-                "15",
-                "16"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int a=3,b=4; printf(\"%d\", a*b + b/a);",
+                "language": "c"
+            },
+            "options": ["13", "14", "15", "16"],
+            "correctAnswer": 2
         },
         {
             "id": "a29",
-            "q": "Time complexity?\nfor(int i=0;i<n;i++)\n for(int j=0;j<i;j++){}",
-            "options": [
-                "O(n)",
-                "O(n log n)",
-                "O(n²)",
-                "O(n³)"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity?\nfor(int i=0;i<n;i++)\n for(int j=0;j<i;j++){}",
+            "options": ["O(n)", "O(n log n)", "O(n²)", "O(n³)"],
+            "correctAnswer": 2
         },
         {
             "id": "a30",
-            "q": "Output?\nint arr[5]={1,2,3,4,5}; printf(\"%d\", arr[2]++);",
-            "options": [
-                "2",
-                "3",
-                "4",
-                "5"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int arr[5]={1,2,3,4,5}; printf(\"%d\", arr[2]++);",
+                "language": "c"
+            },
+            "options": ["2", "3", "4", "5"],
+            "correctAnswer": 1
         },
         {
             "id": "a31",
-            "q": "Output of merge sort on 5,3,2,4?",
-            "options": [
-                "3 2 4 5",
-                "2 3 4 5",
-                "5 4 3 2",
-                "2 4 3 5"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Output of merge sort on 5,3,2,4?",
+            "options": ["3 2 4 5", "2 3 4 5", "5 4 3 2", "2 4 3 5"],
+            "correctAnswer": 1
         },
         {
             "id": "a32",
-            "q": "Output?\nint i=1;\nwhile(i<5){ i*=2; }\nprintf(\"%d\",i);",
-            "options": [
-                "1",
-                "2",
-                "4",
-                "8"
-            ],
-            "answer": 3
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int i=1;\nwhile(i<5){ i*=2; }\nprintf(\"%d\",i);",
+                "language": "c"
+            },
+            "options": ["1", "2", "4", "8"],
+            "correctAnswer": 3
         },
         {
             "id": "a33",
-            "q": "Time complexity?\nfor(i=0;i<n;i++) for(j=n;j>0;j/=2) {}",
-            "options": [
-                "O(log n)",
-                "O(n)",
-                "O(n log n)",
-                "O(n²)"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity?\nfor(i=0;i<n;i++) for(j=n;j>0;j/=2) {}",
+            "options": ["O(log n)", "O(n)", "O(n log n)", "O(n²)"],
+            "correctAnswer": 2
         },
         {
             "id": "a34",
-            "q": "Output?\nprintf(\"%d\", 10/3);",
-            "options": [
-                "3",
-                "3.33",
-                "4",
-                "Error"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "printf(\"%d\", 10/3);",
+                "language": "c"
+            },
+            "options": ["3", "3.33", "4", "Error"],
+            "correctAnswer": 0
         },
         {
             "id": "a35",
-            "q": "Output?\nint x=0;\nif(x=5) printf(\"Hi\"); else printf(\"Bye\");",
-            "options": [
-                "Hi",
-                "Bye",
-                "Error",
-                "None"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int x=0;\nif(x=5) printf(\"Hi\"); else printf(\"Bye\");",
+                "language": "c"
+            },
+            "options": ["Hi", "Bye", "Error", "None"],
+            "correctAnswer": 0
         },
         {
             "id": "a36",
-            "q": "Algorithm for searching sorted array?",
-            "options": [
-                "Linear search",
-                "Binary search",
-                "DFS",
-                "Hashing"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Algorithm for searching sorted array?",
+            "options": ["Linear search", "Binary search", "DFS", "Hashing"],
+            "correctAnswer": 1
         },
         {
             "id": "a37",
-            "q": "Output?\nprintf(\"%d\", (5>2)?10:20 );",
-            "options": [
-                "10",
-                "20",
-                "Error",
-                "None"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "printf(\"%d\", (5>2)?10:20 );",
+                "language": "c"
+            },
+            "options": ["10", "20", "Error", "None"],
+            "correctAnswer": 0
         },
         {
             "id": "a38",
-            "q": "Output?\nint x=1;\nfor(int i=1;i<4;i++) x+=i;\nprintf(\"%d\",x);",
-            "options": [
-                "3",
-                "4",
-                "5",
-                "7"
-            ],
-            "answer": 3
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int x=1;\nfor(int i=1;i<4;i++) x+=i;\nprintf(\"%d\",x);",
+                "language": "c"
+            },
+            "options": ["3", "4", "5", "7"],
+            "correctAnswer": 3
         },
         {
             "id": "a39",
-            "q": "Time complexity of nested loops of size n?",
-            "options": [
-                "O(1)",
-                "O(n)",
-                "O(n²)",
-                "O(2ⁿ)"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity of nested loops of size n?",
+            "options": ["O(1)", "O(n)", "O(n²)", "O(2ⁿ)"],
+            "correctAnswer": 2
         },
         {
             "id": "a40",
-            "q": "Output?\nprintf(\"%d\", 5%2 );",
-            "options": [
-                "0",
-                "1",
-                "2",
-                "Error"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "printf(\"%d\", 5%2 );",
+                "language": "c"
+            },
+            "options": ["0", "1", "2", "Error"],
+            "correctAnswer": 1
         },
         {
             "id": "a41",
-            "q": "Output?\nint a=2,b=3;\nprintf(\"%d\", (a+b)*b );",
-            "options": [
-                "10",
-                "12",
-                "15",
-                "18"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int a=2,b=3;\nprintf(\"%d\", (a+b)*b );",
+                "language": "c"
+            },
+            "options": ["10", "12", "15", "18"],
+            "correctAnswer": 1
         },
         {
             "id": "a42",
-            "q": "Output?\nint i;\nfor(i=0;i<3;i++);\nprintf(\"%d\",i);",
-            "options": [
-                "0",
-                "1",
-                "3",
-                "4"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int i;\nfor(i=0;i<3;i++);\nprintf(\"%d\",i);",
+                "language": "c"
+            },
+            "options": ["0", "1", "3", "4"],
+            "correctAnswer": 2
         },
         {
             "id": "a43",
-            "q": "Time complexity?\nwhile(n>1){ n=n/2; }",
-            "options": [
-                "O(n)",
-                "O(log n)",
-                "O(n log n)",
-                "O(1)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity?\nwhile(n>1){ n=n/2; }",
+            "options": ["O(n)", "O(log n)", "O(n log n)", "O(1)"],
+            "correctAnswer": 1
         },
         {
             "id": "a44",
-            "q": "Output?\nint x=2;\nprintf(\"%d\", x<<1 );",
-            "options": [
-                "2",
-                "4",
-                "6",
-                "8"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int x=2;\nprintf(\"%d\", x<<1 );",
+                "language": "c"
+            },
+            "options": ["2", "4", "6", "8"],
+            "correctAnswer": 1
         },
         {
             "id": "a45",
-            "q": "Output?\nint x=7;\nprintf(\"%d\", x&3 );",
-            "options": [
-                "1",
-                "2",
-                "3",
-                "5"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int x=7;\nprintf(\"%d\", x&3 );",
+                "language": "c"
+            },
+            "options": ["1", "2", "3", "5"],
+            "correctAnswer": 2
         },
         {
             "id": "a46",
-            "q": "Time complexity of bubble sort best case?",
-            "options": [
-                "O(n)",
-                "O(n²)",
-                "O(log n)",
-                "O(1)"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity of bubble sort best case?",
+            "options": ["O(n)", "O(n²)", "O(log n)", "O(1)"],
+            "correctAnswer": 0
         },
         {
             "id": "a47",
-            "q": "Output?\nint a=5;\nprintf(\"%d\", ++a + a++ );",
-            "options": [
-                "11",
-                "12",
-                "13",
-                "14"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int a=5;\nprintf(\"%d\", ++a + a++ );",
+                "language": "c"
+            },
+            "options": ["11", "12", "13", "14"],
+            "correctAnswer": 2
         },
         {
             "id": "a48",
-            "q": "Output?\nprintf(\"%d\", sizeof(int));",
-            "options": [
-                "2",
-                "4",
-                "Depends on system",
-                "8"
-            ],
-            "answer": 2
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "printf(\"%d\", sizeof(int));",
+                "language": "c"
+            },
+            "options": ["2", "4", "Depends on system", "8"],
+            "correctAnswer": 2
         },
         {
             "id": "a49",
-            "q": "Time complexity of merge sort?",
-            "options": [
-                "O(n)",
-                "O(n log n)",
-                "O(n²)",
-                "O(log n)"
-            ],
-            "answer": 1
+            "language": "algorithms",
+            "type": "mcq",
+            "title": "Time complexity of merge sort?",
+            "options": ["O(n)", "O(n log n)", "O(n²)", "O(log n)"],
+            "correctAnswer": 1
         },
         {
             "id": "a50",
-            "q": "Output?\nint x=4,y=0;\nprintf(\"%d\", x&&y );",
-            "options": [
-                "0",
-                "1",
-                "-1",
-                "Error"
-            ],
-            "answer": 0
+            "language": "algorithms",
+            "type": "output",
+            "title": "Output of the following code?",
+            "code": {
+                "content": "int x=4,y=0;\nprintf(\"%d\", x&&y );",
+                "language": "c"
+            },
+            "options": ["0", "1", "-1", "Error"],
+            "correctAnswer": 0
         }
     ]
 }

@@ -28,13 +28,24 @@ export default function Quiz() {
   const [timeLeft, setTimeLeft] = useState(60 * 30);
   const [fullscreenStarted, setFullscreenStarted] = useState(false);
 
-  /* ================= FETCH QUESTIONS ================= */
+  /* ================= FETCH & NORMALIZE QUESTIONS ================= */
   useEffect(() => {
     fetch("http://127.0.0.1:8081/api/admin/questions")
       .then((res) => res.json())
-      .then((data) =>
-        setQuestions(data.filter((q) => q.subjectId === subjectId))
-      )
+      .then((data) => {
+        const filtered = data.filter(
+          (q) => q.subjectId === subjectId
+        );
+
+        // 🔑 NORMALIZATION LAYER
+        const normalized = filtered.map((q) => ({
+          ...q,
+          question: q.title,            // backend → frontend
+          answer: q.correctAnswer       // backend → frontend
+        }));
+
+        setQuestions(normalized);
+      })
       .catch(() => toast.error("Failed to load exam"));
   }, [subjectId]);
 
@@ -92,7 +103,6 @@ export default function Quiz() {
 
   const handleSubmit = (auto = false) => {
     if (submittedRef.current) return;
-
     if (!auto && !window.confirm("Submit test?")) return;
 
     submittedRef.current = true;
@@ -132,10 +142,12 @@ export default function Quiz() {
   if (!fullscreenStarted) {
     return (
       <div className="loading">
-        <button onClick={() => {
-          document.documentElement.requestFullscreen?.();
-          setFullscreenStarted(true);
-        }}>
+        <button
+          onClick={() => {
+            document.documentElement.requestFullscreen?.();
+            setFullscreenStarted(true);
+          }}
+        >
           Start Exam
         </button>
       </div>
@@ -144,21 +156,9 @@ export default function Quiz() {
 
   /* ================= FORMAT QUESTION ================= */
   const q = questions[current];
-  console.log("current question:", q);
 
-  const formatted = formatQuestion(
-    q?.question || "",
-    q?.explanation || "",
-    q?.answerText || ""
-  );
-
-  // if (!formatted || formatted.isInvalid) {
-  //   return (
-  //     <div className="question-error-box">
-  //       ⚠ Question data is incomplete. Please skip.
-  //     </div>
-  //   );
-  // }
+  const formatted = formatQuestion(q,current);
+  console.log("test", q);
 
   /* ================= UI ================= */
   return (
@@ -166,7 +166,9 @@ export default function Quiz() {
       <header className="cbt-header">
         <div>CBT EXAM</div>
         <TimerRing timeLeft={timeLeft} />
-        <div>{current + 1} / {questions.length}</div>
+        <div>
+          {current + 1} / {questions.length}
+        </div>
       </header>
 
       <div className="cbt-body">
@@ -193,7 +195,7 @@ export default function Quiz() {
           <div className="options">
             {formatted.isInvalid ? (
               <div className="question-error-box">
-           
+                ⚠ Invalid or incomplete question
               </div>
             ) : (
               q.options.map((opt, i) => (
@@ -208,11 +210,20 @@ export default function Quiz() {
             )}
           </div>
 
-
           <div className="cbt-actions">
-            <button onClick={() => setCurrent(current - 1)} disabled={current === 0}>Prev</button>
+            <button
+              onClick={() => setCurrent(current - 1)}
+              disabled={current === 0}
+            >
+              Prev
+            </button>
             <button onClick={toggleReview}>Review</button>
-            <button onClick={() => setCurrent(current + 1)} disabled={current === questions.length - 1}>Next</button>
+            <button
+              onClick={() => setCurrent(current + 1)}
+              disabled={current === questions.length - 1}
+            >
+              Next
+            </button>
             <button onClick={() => handleSubmit(false)}>Submit</button>
           </div>
         </main>

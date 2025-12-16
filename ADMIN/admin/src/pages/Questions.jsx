@@ -16,6 +16,7 @@ export default function Questions() {
       if (Array.isArray(res)) setList(res);
     });
   }, []);
+console.log("list",list);
 
   const remove = async (id) => {
     if (!confirm("Delete question?")) return;
@@ -95,7 +96,7 @@ export default function Questions() {
               {list.map((q) => (
                 <div key={q._id} className="list-row">
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 800 }}>{q.question}</div>
+                    <div style={{ fontWeight: 800 }}>{q.title}</div>
                     <div className="muted">Subject: {q.subjectName}</div>
                   </div>
 

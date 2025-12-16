@@ -5,6 +5,7 @@ const upload = multer();
 
 // ===== MongoDB connection =====
 const url = "mongodb://127.0.0.1:27017";
+// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
@@ -306,84 +307,101 @@ const server = http.createServer(async (req, res) => {
     ) {
       upload.single("file")(req, res, async () => {
         try {
+          // ===== 1. FILE CHECK =====
           if (!req.file) {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ message: "No file uploaded" }));
           }
 
+          // ===== 2. PARSE JSON =====
           const jsonText = req.file.buffer.toString("utf8");
           const json = JSON.parse(jsonText);
 
-          if (!json.questions || !Array.isArray(json.questions)) {
+          if (!json.category || !Array.isArray(json.questions)) {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(
               JSON.stringify({
-                message: "Invalid format: expected {id, title, questions[]}",
+                message: "Invalid format: expected { category, questions[] }",
               })
             );
           }
 
-          // ========= Subject Handling ==========
-          const subjectName = json.title.trim().toLowerCase();
-          let subject = await db.collection("subjects").findOne({ name: subjectName });
+          // ===== 3. SUBJECT HANDLING =====
+          const subjectName = json.category.trim().toLowerCase();
+
+          let subject = await db
+            .collection("subjects")
+            .findOne({ name: subjectName });
 
           if (!subject) {
             const sub = await db.collection("subjects").insertOne({
               name: subjectName,
-              description: "",
+              displayName: json.category.trim(), // 👈 HUMAN READABLE
               createdAt: new Date(),
             });
             subject = { _id: sub.insertedId };
           }
 
-          // ========= Duplicate Check ==========
+          // ===== 4. QUESTION IMPORT =====
           let duplicates = 0;
-          let newQuestions = [];
+          const newQuestions = [];
 
           for (const q of json.questions) {
             const exists = await db.collection("questions").findOne({
               subjectId: subject._id.toString(),
-              question: q.q.trim().toLowerCase(),
+              questionId: q.id,
             });
 
             if (exists) {
               duplicates++;
-            } else {
-              newQuestions.push({
-                subjectId: subject._id.toString(),
-                question: q.q.trim().toLowerCase(),
-                options: q.options,
-                correctAnswer: q.answer,
-                createdAt: new Date(),
-              });
+              continue;
             }
+
+            newQuestions.push({
+              subjectId: subject._id.toString(),
+              questionId: q.id,
+              language: q.language,
+              type: q.type,              // mcq | output
+              title: q.title,
+              code: q.code || null,
+              options: q.options,
+              correctAnswer: q.correctAnswer,
+              createdAt: new Date(),
+            });
           }
 
-          if (duplicates === json.questions.length) {
+          // ===== 5. DUPLICATE CHECK =====
+          if (!newQuestions.length) {
             res.writeHead(409, { "Content-Type": "application/json" });
             return res.end(
               JSON.stringify({
-                message: "⚠️ Questions already imported!",
-                imported: 0,
+                message: "⚠️ All questions already exist",
+                inserted: 0,
                 duplicates,
               })
             );
           }
 
-          const result = await db.collection("questions").insertMany(newQuestions);
+          // ===== 6. INSERT =====
+          const result = await db
+            .collection("questions")
+            .insertMany(newQuestions);
 
           res.writeHead(200, { "Content-Type": "application/json" });
           return res.end(
             JSON.stringify({
-              message: "📥 Questions imported successfully!",
+              message: "📥 Questions imported successfully",
               inserted: result.insertedCount,
               duplicates,
+              subject: json.category,
             })
           );
         } catch (err) {
-          console.log("❌ Import Error:", err);
+          console.error("❌ Import Error:", err);
           res.writeHead(400, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ message: "Invalid JSON file!" }));
+          return res.end(
+            JSON.stringify({ message: "Invalid JSON file" })
+          );
         }
       });
     }
@@ -395,7 +413,7 @@ const server = http.createServer(async (req, res) => {
       try {
         const subjectsCount = await db.collection("subjects").countDocuments();
         const questionsCount = await db.collection("questions").countDocuments();
-        const usersCount = await db.collection("users").countDocuments();
+        const usersCount = await db.collection("users").countDocuments({ role: "user" });
         const resultsCount = await db.collection("results").countDocuments();
 
         res.writeHead(200, { "Content-Type": "application/json" });
