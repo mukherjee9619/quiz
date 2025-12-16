@@ -28,30 +28,25 @@ export default function Quiz() {
   const [timeLeft, setTimeLeft] = useState(60 * 30);
   const [fullscreenStarted, setFullscreenStarted] = useState(false);
 
-  /* ================= FETCH & NORMALIZE QUESTIONS ================= */
+  /* ================= FETCH QUESTIONS ================= */
   useEffect(() => {
     fetch("http://127.0.0.1:8081/api/admin/questions")
       .then((res) => res.json())
       .then((data) => {
-        const filtered = data.filter(
-          (q) => q.subjectId === subjectId
-        );
-
-        // 🔑 NORMALIZATION LAYER
-        const normalized = filtered.map((q) => ({
+        const filtered = data.filter(q => q.subjectId === subjectId);
+        const normalized = filtered.map(q => ({
           ...q,
-          question: q.title,            // backend → frontend
-          answer: q.correctAnswer       // backend → frontend
+          question: q.title,
+          answer: q.correctAnswer
         }));
-
         setQuestions(normalized);
       })
       .catch(() => toast.error("Failed to load exam"));
   }, [subjectId]);
 
-  /* ================= VISITED TRACK ================= */
+  /* ================= VISITED ================= */
   useEffect(() => {
-    setVisited((prev) => ({ ...prev, [current]: true }));
+    setVisited(prev => ({ ...prev, [current]: true }));
   }, [current]);
 
   /* ================= TIMER ================= */
@@ -60,14 +55,14 @@ export default function Quiz() {
       handleSubmit(true);
       return;
     }
-    const timer = setInterval(() => setTimeLeft((t) => t - 1), 1000);
-    return () => clearInterval(timer);
+    const t = setInterval(() => setTimeLeft(v => v - 1), 1000);
+    return () => clearInterval(t);
   }, [timeLeft]);
 
   /* ================= SECURITY ================= */
   useEffect(() => {
-    const blockContext = (e) => e.preventDefault();
-    const keyBlock = (e) => {
+    const block = e => e.preventDefault();
+    const keyBlock = e => {
       if (
         e.key === "F5" ||
         e.key === "F11" ||
@@ -77,10 +72,10 @@ export default function Quiz() {
         toast.error("Action blocked during exam");
       }
     };
-    document.addEventListener("contextmenu", blockContext);
+    document.addEventListener("contextmenu", block);
     document.addEventListener("keydown", keyBlock);
     return () => {
-      document.removeEventListener("contextmenu", blockContext);
+      document.removeEventListener("contextmenu", block);
       document.removeEventListener("keydown", keyBlock);
     };
   }, []);
@@ -93,12 +88,12 @@ export default function Quiz() {
   /* ================= ACTIONS ================= */
   const selectOption = (index) => {
     if (submittedRef.current) return;
-    setAnswers((prev) => ({ ...prev, [current]: index }));
+    setAnswers(prev => ({ ...prev, [current]: index }));
   };
 
   const toggleReview = () => {
     if (submittedRef.current) return;
-    setReview((prev) => ({ ...prev, [current]: !prev[current] }));
+    setReview(prev => ({ ...prev, [current]: !prev[current] }));
   };
 
   const handleSubmit = (auto = false) => {
@@ -109,9 +104,9 @@ export default function Quiz() {
 
     const total = questions.length;
     const attempted = Object.keys(answers).length;
-
     let correct = 0;
-    Object.keys(answers).forEach((i) => {
+
+    Object.keys(answers).forEach(i => {
       if (answers[i] === questions[i].answer) correct++;
     });
 
@@ -134,7 +129,6 @@ export default function Quiz() {
     });
   };
 
-  /* ================= EARLY UI ================= */
   if (!questions.length) {
     return <div className="loading">Loading Exam...</div>;
   }
@@ -154,21 +148,15 @@ export default function Quiz() {
     );
   }
 
-  /* ================= FORMAT QUESTION ================= */
   const q = questions[current];
+  const formatted = formatQuestion(q, current);
 
-  const formatted = formatQuestion(q,current);
-  console.log("test", q);
-
-  /* ================= UI ================= */
   return (
     <div className="cbt-root">
       <header className="cbt-header">
         <div>CBT EXAM</div>
         <TimerRing timeLeft={timeLeft} />
-        <div>
-          {current + 1} / {questions.length}
-        </div>
+        <div>{current + 1} / {questions.length}</div>
       </header>
 
       <div className="cbt-body">
@@ -182,7 +170,7 @@ export default function Quiz() {
         />
 
         <main className="cbt-main">
-          <p>{formatted.questionPart}</p>
+          <p className="question-text">{formatted.questionPart}</p>
 
           {formatted.codePart && (
             <pre className={`language-${formatted.language}`}>
@@ -202,7 +190,7 @@ export default function Quiz() {
                 <button
                   key={i}
                   onClick={() => selectOption(i)}
-                  className={answers[current] === i ? "selected" : ""}
+                  className={`option ${answers[current] === i ? "selected" : ""}`}
                 >
                   {opt}
                 </button>
@@ -211,20 +199,18 @@ export default function Quiz() {
           </div>
 
           <div className="cbt-actions">
-            <button
-              onClick={() => setCurrent(current - 1)}
-              disabled={current === 0}
-            >
+            <button onClick={() => setCurrent(c => c - 1)} disabled={current === 0}>
               Prev
             </button>
-            <button onClick={toggleReview}>Review</button>
-            <button
-              onClick={() => setCurrent(current + 1)}
-              disabled={current === questions.length - 1}
-            >
+            <button className={`review-btn ${review[current] ? "marked" : ""}`} onClick={toggleReview}>
+              Review
+            </button>
+            <button onClick={() => setCurrent(c => c + 1)} disabled={current === questions.length - 1}>
               Next
             </button>
-            <button onClick={() => handleSubmit(false)}>Submit</button>
+            <button className="submit-btn" onClick={() => handleSubmit(false)}>
+              Submit
+            </button>
           </div>
         </main>
       </div>

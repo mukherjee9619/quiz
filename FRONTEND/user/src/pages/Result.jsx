@@ -11,20 +11,29 @@ export default function Result() {
   }
 
   const {
-    total,
-    attempted,
-    unattempted,
-    correct,
-    wrong,
-    score,
+    total = 0,
+    attempted = 0,
+    unattempted = 0,
+    correct = 0,
+    wrong = 0,
+    score = 0,
     accuracy,
-    percentage,
-    timeTaken,
+    percentage = 0,
+    timeTaken = 0,
   } = state;
 
-  // Determine pass/fail based on percentage cutoff
-  const isPass = percentage >= 40; // change cutoff as needed
+  /* ================= SAFE ACCURACY ================= */
+  const safeAccuracy =
+    typeof accuracy === "number"
+      ? accuracy
+      : attempted === 0
+      ? 0
+      : Math.round((correct / attempted) * 100);
 
+  /* ================= PASS / FAIL ================= */
+  const isPass = percentage >= 40;
+
+  /* ================= TIME ================= */
   const minutes = Math.floor(timeTaken / 60);
   const seconds = timeTaken % 60;
 
@@ -63,7 +72,7 @@ export default function Result() {
           <Stat label="Unattempted" value={unattempted} />
           <Stat label="Correct" value={correct} />
           <Stat label="Wrong" value={wrong} />
-          <Stat label="Accuracy" value={`${accuracy}%`} />
+          <Stat label="Accuracy" value={`${safeAccuracy}%`} />
           <Stat label="Time Taken" value={`${minutes}m ${seconds}s`} />
         </div>
 
