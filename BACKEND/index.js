@@ -4,7 +4,9 @@ const multer = require("multer");
 const upload = multer();
 
 // ===== MongoDB connection =====
+
 const url = "mongodb://127.0.0.1:27017";
+// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
@@ -236,52 +238,51 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-   // ===================================================
-// DELETE SUBJECT AND ALL ITS QUESTIONS
-// ===================================================
-else if (
-  req.method === "DELETE" &&
-  req.url.startsWith("/api/admin/questions/subject/")
-) {
-  const subjectId = req.url.split("/")[5];
+    // ===================================================
+    // DELETE SUBJECT AND ALL ITS QUESTIONS
+    // ===================================================
+    else if (
+      req.method === "DELETE" &&
+      req.url.startsWith("/api/admin/questions/subject/")
+    ) {
+      const subjectId = req.url.split("/")[5];
 
-  try {
-    // 1️⃣ Validate subject exists
-    const subject = await db
-      .collection("subjects")
-      .findOne({ _id: new ObjectId(subjectId) });
+      try {
+        // 1️⃣ Validate subject exists
+        const subject = await db
+          .collection("subjects")
+          .findOne({ _id: new ObjectId(subjectId) });
 
-    if (!subject) {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
+        if (!subject) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
+        }
+
+        // 2️⃣ Delete all questions of subject
+        const qResult = await db
+          .collection("questions")
+          .deleteMany({ subjectId });
+
+        // 3️⃣ Delete subject itself
+        await db
+          .collection("subjects")
+          .deleteOne({ _id: new ObjectId(subjectId) });
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({
+            message: "🗑️ Subject & all questions deleted successfully",
+            subject: subject.name,
+            deletedQuestions: qResult.deletedCount,
+          })
+        );
+      } catch (err) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({ message: "⚠️ Invalid subject ID format" })
+        );
+      }
     }
-
-    // 2️⃣ Delete all questions of subject
-    const qResult = await db
-      .collection("questions")
-      .deleteMany({ subjectId });
-
-    // 3️⃣ Delete subject itself
-    await db
-      .collection("subjects")
-      .deleteOne({ _id: new ObjectId(subjectId) });
-
-    res.writeHead(200, { "Content-Type": "application/json" });
-    return res.end(
-      JSON.stringify({
-        message: "🗑️ Subject & all questions deleted successfully",
-        subject: subject.name,
-        deletedQuestions: qResult.deletedCount,
-      })
-    );
-  } catch (err) {
-    res.writeHead(400, { "Content-Type": "application/json" });
-    return res.end(
-      JSON.stringify({ message: "⚠️ Invalid subject ID format" })
-    );
-  }
-}
-
 
     // ===================================================
     // ADD QUESTION
