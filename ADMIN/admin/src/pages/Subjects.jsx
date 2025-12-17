@@ -2,11 +2,18 @@ import React, { useEffect, useState } from "react";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 import "../styles/addsubject.css";
+import "../styles/confirmModal.css";
 
 export default function Subjects() {
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState(null);
+
   const navigate = useNavigate();
 
   const shortText = (text, max = 40) => {
@@ -14,16 +21,14 @@ export default function Subjects() {
     return text.length > max ? text.substring(0, max) + "..." : text;
   };
 
-
   // ----------------------------------------
-  // ✅ Fetch subjects from backend
+  // ✅ Fetch subjects
   // ----------------------------------------
   const loadSubjects = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8081/api/admin/subjects");
       const data = await res.json();
 
-      // Remove null values + sort alphabetically
       const cleanData = data
         .filter((x) => x?.name)
         .sort((a, b) => a.name.localeCompare(b.name));
@@ -41,25 +46,44 @@ export default function Subjects() {
   }, []);
 
   // ----------------------------------------
-  // 🗑️ Delete Subject
+  // 🗑️ Open delete confirmation
   // ----------------------------------------
-  const remove = async (id) => {
-    if (!window.confirm("Delete this subject permanently?")) return;
+  const openDeleteModal = (subject) => {
+    setSelectedSubject(subject);
+    setShowModal(true);
+  };
+
+  // ----------------------------------------
+  // ❌ Cancel delete
+  // ----------------------------------------
+  const cancelDelete = () => {
+    setShowModal(false);
+    setSelectedSubject(null);
+  };
+
+  // ----------------------------------------
+  // ✅ Confirm delete
+  // ----------------------------------------
+  const confirmDelete = async () => {
+    if (!selectedSubject) return;
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8081/api/admin/subjects/${id}`,
+        `http://127.0.0.1:8081/api/admin/questions/subject/${selectedSubject._id}`,
         { method: "DELETE" }
       );
 
       const data = await res.json();
-      alert(data.message || "Deleted successfully");
+     toast(data.message || "Deleted successfully");
 
-      // Remove subject from UI without full reload
-      setList((prev) => prev.filter((sub) => sub._id !== id));
+      setList((prev) =>
+        prev.filter((sub) => sub._id !== selectedSubject._id)
+      );
     } catch (err) {
       console.error("Delete failed:", err);
-      alert("Failed to delete subject");
+      toast("Failed to delete subject");
+    } finally {
+      cancelDelete();
     }
   };
 
@@ -85,15 +109,15 @@ export default function Subjects() {
               </button>
             </div>
 
-            {/* Loading State */}
+            {/* Loading */}
             {loading && <p className="muted mt-3">Loading...</p>}
 
-            {/* Empty State */}
+            {/* Empty */}
             {!loading && list.length === 0 && (
               <p className="muted mt-3">No subjects found.</p>
             )}
 
-            {/* Subject List */}
+            {/* List */}
             {!loading && list.length > 0 && (
               <div style={{ marginTop: 12 }}>
                 {list.map((s) => (
@@ -117,7 +141,7 @@ export default function Subjects() {
 
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => remove(s._id)}
+                        onClick={() => openDeleteModal(s)}
                       >
                         Delete
                       </button>
@@ -130,6 +154,37 @@ export default function Subjects() {
           </div>
         </div>
       </main>
+
+      {/* ================= DELETE CONFIRM MODAL ================= */}
+      {showModal && (
+        <div className="confirm-overlay">
+          <div className="confirm-box">
+            <h4>Are you want to delete this {selectedSubject?.name.toUpperCase()} ?</h4>
+
+            <p>
+              This will permanently delete
+              <span> {selectedSubject?.name.toUpperCase()} </span>
+              and all its questions.
+            </p>
+
+            <div className="confirm-actions">
+              <button
+                className="btn btn-secondary"
+                onClick={cancelDelete}
+              >
+                Cancel
+              </button>
+
+              <button
+                className="btn btn-danger"
+                onClick={confirmDelete}
+              >
+                Yes, Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -4,7 +4,7 @@ const API_URL = "http://127.0.0.1:8081";
 
 export async function registerUser(userData) {
   try {
-    const res = await fetch(`${API_URL}/register`, {
+    const res = await fetch(`${API_URL}/admin/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(userData),
@@ -26,7 +26,7 @@ export async function registerUser(userData) {
 
 export async function loginUser(credentials) {
   try {
-    const res = await fetch(`${API_URL}/login`, {
+    const res = await fetch(`${API_URL}/admin/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(credentials),

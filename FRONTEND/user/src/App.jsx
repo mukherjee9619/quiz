@@ -7,6 +7,11 @@ import Home from "./pages/Home";
 import StartQuiz from "./pages/StartQuiz";
 import Quiz from "./pages/Quiz";
 import Result from "./pages/Result";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+
+// Route Protection
+import ProtectedRoute from "./routes/ProtectedRoute";
 
 export default function App() {
   return (
@@ -26,10 +31,28 @@ export default function App() {
 
       {/* Routes */}
       <Routes>
+        {/* Public Pages */}
         <Route path="/" element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+
+        {/* Start Quiz Page (subject intro) */}
         <Route path="/start/:subjectId" element={<StartQuiz />} />
-        <Route path="/quiz/:subjectId" element={<Quiz />} />
+
+        {/* 🔒 PROTECTED EXAM ROUTE */}
+        <Route
+          path="/quiz/:subjectId"
+          element={
+            <ProtectedRoute>
+              <Quiz />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Result Page */}
         <Route path="/result" element={<Result />} />
+
+        {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </>

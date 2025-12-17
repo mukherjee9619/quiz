@@ -5,22 +5,21 @@ const upload = multer();
 
 // ===== MongoDB connection =====
 const url = "mongodb://127.0.0.1:27017";
-// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
-client
-  .connect()
-  .then(() => {
-    console.log("✅ Connected to MongoDB");
-    db = client.db("quizDB");
-  })
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+client.connect().then(() => {
+  console.log("✅ Connected to MongoDB");
+  db = client.db("quizDB");
+});
 
 const server = http.createServer(async (req, res) => {
   // ===== CORS =====
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, OPTIONS"
+  );
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 
   if (req.method === "OPTIONS") {
@@ -30,7 +29,6 @@ const server = http.createServer(async (req, res) => {
   }
 
   try {
-    // Helper: Parse JSON body
     const parseBody = () =>
       new Promise((resolve, reject) => {
         let body = "";
@@ -39,25 +37,22 @@ const server = http.createServer(async (req, res) => {
           try {
             resolve(JSON.parse(body || "{}"));
           } catch {
-            reject("Invalid JSON format");
+            reject("Invalid JSON");
           }
         });
       });
 
-    // ===================================================
-    // REGISTER
-    // ===================================================
-    if (req.method === "POST" && req.url === "/register") {
+    // ================= ADMIN REGISTER =================
+    if (req.method === "POST" && req.url === "/admin/register") {
       const data = await parseBody();
       const users = db.collection("users");
 
-      const existing = await users.findOne({ email: data.email });
-      if (existing) {
+      if (await users.findOne({ email: data.email })) {
         res.writeHead(409, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "⚠️ User already exists" }));
+        return res.end(JSON.stringify({ message: "User already exists" }));
       }
 
-      const result = await users.insertOne({
+      await users.insertOne({
         fullname: data.fullname,
         email: data.email,
         password: data.password,
@@ -66,34 +61,71 @@ const server = http.createServer(async (req, res) => {
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
-      return res.end(
-        JSON.stringify({
-          message: "🎉 Registration Successful!",
-          insertedId: result.insertedId,
-        })
-      );
+      return res.end(JSON.stringify({ message: "Admin registered" }));
     }
 
-    // ===================================================
-    // LOGIN
-    // ===================================================
-    else if (req.method === "POST" && req.url === "/login") {
-      const { email, password } = await parseBody();
+    // ================= FRONTEND REGISTER =================
+    else if (req.method === "POST" && req.url === "/api/register") {
+      const data = await parseBody();
       const users = db.collection("users");
 
-      const user = await users.findOne({ email, password });
+      if (await users.findOne({ email: data.email })) {
+        res.writeHead(409, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "User already exists" }));
+      }
+
+      await users.insertOne({
+        fullname: data.name,
+        email: data.email,
+        password: data.password,
+        role: "user",
+        createdAt: new Date(),
+      });
+
+      res.writeHead(201, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Registration successful" }));
+    }
+
+    // ================= ADMIN LOGIN =================
+    else if (req.method === "POST" && req.url === "/admin/login") {
+      const { email, password } = await parseBody();
+      const user = await db.collection("users").findOne({ email, password });
+
       if (!user) {
         res.writeHead(401, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "❌ Invalid Email or Password!" }));
+        return res.end(JSON.stringify({ message: "Invalid credentials" }));
       }
 
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(
         JSON.stringify({
-          message: "✅ Login Successful!",
           fullname: user.fullname,
-          role: user.role,
           email: user.email,
+          role: user.role,
+        })
+      );
+    }
+
+    // ================= FRONTEND LOGIN =================
+    else if (req.method === "POST" && req.url === "/api/login") {
+      const { email, password } = await parseBody();
+      const user = await db.collection("users").findOne({ email, password });
+
+      if (!user) {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid credentials" }));
+      }
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(
+        JSON.stringify({
+          message: "Login successful",
+          user: {
+            id: user._id,
+            name: user.fullname,
+            email: user.email,
+            role: user.role,
+          },
         })
       );
     }
@@ -111,7 +143,9 @@ const server = http.createServer(async (req, res) => {
 
       if (existing) {
         res.writeHead(409, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "⚠️ Subject already exists!" }));
+        return res.end(
+          JSON.stringify({ message: "⚠️ Subject already exists!" })
+        );
       }
 
       const result = await subjects.insertOne({
@@ -130,9 +164,12 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ===================================================
-    // ⭐ EDIT SUBJECT
+    // EDIT SUBJECT
     // ===================================================
-    else if (req.method === "PUT" && req.url.startsWith("/api/admin/subjects/")) {
+    else if (
+      req.method === "PUT" &&
+      req.url.startsWith("/api/admin/subjects/")
+    ) {
       const id = req.url.split("/")[4];
       const data = await parseBody();
 
@@ -166,7 +203,6 @@ const server = http.createServer(async (req, res) => {
     // ===================================================
     else if (req.method === "GET" && req.url === "/api/admin/subjects") {
       const subjects = await db.collection("subjects").find({}).toArray();
-
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(JSON.stringify(subjects));
     }
@@ -181,7 +217,9 @@ const server = http.createServer(async (req, res) => {
       const id = req.url.split("/")[4];
 
       try {
-        const result = await db.collection("subjects").deleteOne({ _id: new ObjectId(id) });
+        const result = await db
+          .collection("subjects")
+          .deleteOne({ _id: new ObjectId(id) });
 
         if (result.deletedCount === 0) {
           res.writeHead(404, { "Content-Type": "application/json" });
@@ -197,6 +235,53 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "⚠️ Invalid ID format!" }));
       }
     }
+
+   // ===================================================
+// DELETE SUBJECT AND ALL ITS QUESTIONS
+// ===================================================
+else if (
+  req.method === "DELETE" &&
+  req.url.startsWith("/api/admin/questions/subject/")
+) {
+  const subjectId = req.url.split("/")[5];
+
+  try {
+    // 1️⃣ Validate subject exists
+    const subject = await db
+      .collection("subjects")
+      .findOne({ _id: new ObjectId(subjectId) });
+
+    if (!subject) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
+    }
+
+    // 2️⃣ Delete all questions of subject
+    const qResult = await db
+      .collection("questions")
+      .deleteMany({ subjectId });
+
+    // 3️⃣ Delete subject itself
+    await db
+      .collection("subjects")
+      .deleteOne({ _id: new ObjectId(subjectId) });
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    return res.end(
+      JSON.stringify({
+        message: "🗑️ Subject & all questions deleted successfully",
+        subject: subject.name,
+        deletedQuestions: qResult.deletedCount,
+      })
+    );
+  } catch (err) {
+    res.writeHead(400, { "Content-Type": "application/json" });
+    return res.end(
+      JSON.stringify({ message: "⚠️ Invalid subject ID format" })
+    );
+  }
+}
+
 
     // ===================================================
     // ADD QUESTION
@@ -222,9 +307,12 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ===================================================
-    // ⭐ EDIT QUESTION
+    // EDIT QUESTION
     // ===================================================
-    else if (req.method === "PUT" && req.url.startsWith("/api/admin/questions/")) {
+    else if (
+      req.method === "PUT" &&
+      req.url.startsWith("/api/admin/questions/")
+    ) {
       const id = req.url.split("/")[3];
       const data = await parseBody();
 
@@ -277,7 +365,10 @@ const server = http.createServer(async (req, res) => {
     // ===================================================
     // DELETE QUESTION
     // ===================================================
-    else if (req.method === "DELETE" && req.url.startsWith("/api/admin/questions/")) {
+    else if (
+      req.method === "DELETE" &&
+      req.url.startsWith("/api/admin/questions/")
+    ) {
       const id = req.url.split("/")[3];
 
       try {
@@ -328,7 +419,6 @@ const server = http.createServer(async (req, res) => {
 
           // ===== 3. SUBJECT HANDLING =====
           const subjectName = json.category.trim().toLowerCase();
-
           let subject = await db
             .collection("subjects")
             .findOne({ name: subjectName });
@@ -336,7 +426,7 @@ const server = http.createServer(async (req, res) => {
           if (!subject) {
             const sub = await db.collection("subjects").insertOne({
               name: subjectName,
-              displayName: json.category.trim(), // 👈 HUMAN READABLE
+              displayName: json.category.trim(),
               createdAt: new Date(),
             });
             subject = { _id: sub.insertedId };
@@ -361,7 +451,7 @@ const server = http.createServer(async (req, res) => {
               subjectId: subject._id.toString(),
               questionId: q.id,
               language: q.language,
-              type: q.type,              // mcq | output
+              type: q.type,
               title: q.title,
               code: q.code || null,
               options: q.options,
@@ -399,9 +489,7 @@ const server = http.createServer(async (req, res) => {
         } catch (err) {
           console.error("❌ Import Error:", err);
           res.writeHead(400, { "Content-Type": "application/json" });
-          return res.end(
-            JSON.stringify({ message: "Invalid JSON file" })
-          );
+          return res.end(JSON.stringify({ message: "Invalid JSON file" }));
         }
       });
     }
@@ -412,8 +500,12 @@ const server = http.createServer(async (req, res) => {
     else if (req.method === "GET" && req.url === "/api/admin/stats") {
       try {
         const subjectsCount = await db.collection("subjects").countDocuments();
-        const questionsCount = await db.collection("questions").countDocuments();
-        const usersCount = await db.collection("users").countDocuments({ role: "user" });
+        const questionsCount = await db
+          .collection("questions")
+          .countDocuments();
+        const usersCount = await db
+          .collection("users")
+          .countDocuments({ role: "user" });
         const resultsCount = await db.collection("results").countDocuments();
 
         res.writeHead(200, { "Content-Type": "application/json" });
@@ -431,20 +523,18 @@ const server = http.createServer(async (req, res) => {
       }
     }
 
-    // ===================================================
-    // INVALID ROUTE
-    // ===================================================
+    // ================= INVALID ROUTE =================
     else {
       res.writeHead(404, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({ message: "Route not found" }));
     }
   } catch (err) {
-    console.error("❌ Error:", err);
+    console.error("❌ Server Error:", err);
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Internal Server Error" }));
   }
 });
 
 server.listen(8081, () => {
-  console.log("🚀 Quiz App Server running at http://127.0.0.1:8081/");
+  console.log("🚀 Server running at http://127.0.0.1:8081");
 });

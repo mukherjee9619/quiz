@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 export default function AddSubject() {
   const [name, setName] = useState("");
@@ -14,7 +15,7 @@ export default function AddSubject() {
     e.preventDefault();
 
     if (!name.trim()) {
-      alert("Subject name is required");
+      toast("Subject name is required");
       return;
     }
 
@@ -34,25 +35,25 @@ export default function AddSubject() {
 
       // ❌ Duplicate name (from backend 409)
       if (res.status === 409) {
-        alert("⚠️ This subject already exists!");
+        toast("⚠️ This subject already exists!");
         setSaving(false);
         return;
       }
 
       // ❌ Other errors
       if (!res.ok) {
-        alert(data.message || "Failed to add subject");
+        toast(data.message || "Failed to add subject");
         setSaving(false);
         return;
       }
 
       // ✅ Success
-      alert("🎉 Subject added successfully");
+      toast("🎉 Subject added successfully");
       navigate("/subjects");
 
     } catch (err) {
       console.error(err);
-      alert("Server error. Try again!");
+      toast("Server error. Try again!");
     } finally {
       setSaving(false);
     }
