@@ -21,8 +21,8 @@ function hashOTP(otp) {
 }
 // ===== MongoDB connection =====
 
-const url = "mongodb://127.0.0.1:27017";
-// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
+// const url = "mongodb://127.0.0.1:27017";
+const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
@@ -617,6 +617,9 @@ const server = http.createServer(async (req, res) => {
     const question = await db.collection("questions").findOne({
       _id: new ObjectId(id),
     });
+
+    console.log(question);
+    
 
     if (!question) {
       res.writeHead(404, { "Content-Type": "application/json" });

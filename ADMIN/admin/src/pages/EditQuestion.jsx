@@ -24,7 +24,13 @@ export default function EditQuestion() {
       console.log("fetchQuestion called");
 
       try {
-        const res = await fetch(`/api/admin/questions/${id}`);
+        const res = await fetch(`/api/admin/questions/${id}`, {
+          headers: {
+            Authorization: `Bearer ${sessionStorage.getItem("admin_token")}`,
+          },
+        });
+
+
         console.log("response status", res.status);
 
         const data = await res.json();
