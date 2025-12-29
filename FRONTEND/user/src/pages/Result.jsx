@@ -11,29 +11,25 @@ export default function Result() {
   }
 
   const {
+    subjectId,
+    subjectName = "Subject",
+    questions = [],
+    answers = {},
     total = 0,
     attempted = 0,
     unattempted = 0,
     correct = 0,
     wrong = 0,
     score = 0,
-    accuracy,
     percentage = 0,
     timeTaken = 0,
   } = state;
 
-  /* ================= SAFE ACCURACY ================= */
-  const safeAccuracy =
-    typeof accuracy === "number"
-      ? accuracy
-      : attempted === 0
-      ? 0
-      : Math.round((correct / attempted) * 100);
+  const accuracy =
+    attempted === 0 ? 0 : Math.round((correct / attempted) * 100);
 
-  /* ================= PASS / FAIL ================= */
   const isPass = percentage >= 40;
 
-  /* ================= TIME ================= */
   const minutes = Math.floor(timeTaken / 60);
   const seconds = timeTaken % 60;
 
@@ -41,6 +37,7 @@ export default function Result() {
     <div className={`result-root ${isPass ? "pass-anim" : "fail-anim"}`}>
       <div className="result-card glass">
         <h1 className="result-title">Exam Result</h1>
+        <h3 className="subject-name">{subjectName.toUpperCase()}</h3>
 
         <div className={`result-status ${isPass ? "pass" : "fail"}`}>
           {isPass ? "PASS" : "FAIL"}
@@ -72,16 +69,26 @@ export default function Result() {
           <Stat label="Unattempted" value={unattempted} />
           <Stat label="Correct" value={correct} />
           <Stat label="Wrong" value={wrong} />
-          <Stat label="Accuracy" value={`${safeAccuracy}%`} />
+          <Stat label="Accuracy" value={`${accuracy}%`} />
           <Stat label="Time Taken" value={`${minutes}m ${seconds}s`} />
         </div>
 
         {/* ACTIONS */}
         <div className="result-actions">
           <button onClick={() => navigate("/")}>Home</button>
+
           <button
             className="secondary"
-            onClick={() => alert("Review feature coming next")}
+            onClick={() =>
+              navigate("/review", {
+                state: {
+                  subjectId,
+                  subjectName,
+                  questions,
+                  answers,
+                },
+              })
+            }
           >
             Review Answers
           </button>

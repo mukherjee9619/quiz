@@ -1,119 +1,117 @@
 import React, { useState } from "react";
-import { useNavigate, Link, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import "../styles/Login.css";
+import { loginUser } from "../services/authApi";
+import "../styles/Login.css"; // Use the same CSS
 
 export default function Login() {
   const navigate = useNavigate();
-  const location = useLocation();
 
-  const redirectTo = location.state?.from || "/";
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [remember, setRemember] = useState(false);
+  const [error, setError] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
-  const [form, setForm] = useState({
-    email: "",
-    password: "",
-  });
-
-  const [loading, setLoading] = useState(false);
-
-  /* ================= HANDLE CHANGE ================= */
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  /* ================= SUBMIT ================= */
-  const handleSubmit = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
-
-    const { email, password } = form;
-
-    if (!email || !password) {
-      return toast.error("Email and password required");
-    }
+    setError("");
 
     try {
-      setLoading(true);
+      const response = await loginUser({ email, password });
 
-      const res = await fetch("http://127.0.0.1:8081/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
+      if (response.status === 200) {
+        const storage = remember ? localStorage : sessionStorage;
+        storage.setItem("user_token", response.data.token);
 
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.message || "Invalid credentials");
-      }
-
-      /* ================= SAVE SESSION ================= */
-      localStorage.setItem(
-        "smquiz_user",
-        JSON.stringify({
-          id: data.user._id,
-          name: data.user.name,
-          email: data.user.email,
-          role: data.user.role, // admin | student
-        })
-      );
-
-      toast.success(`Welcome ${data.user.name}`);
-
-      /* ================= REDIRECT ================= */
-      if (data.user.role === "admin") {
-        navigate("/admin");
+        toast.success(`Welcome back ${response.data.user.name}`);
+        navigate("/dashboard");
       } else {
-        navigate(redirectTo);
+        setError("Invalid email or password");
       }
-    } catch (err) {
-      toast.error(err.message);
-    } finally {
-      setLoading(false);
+    } catch {
+      setError("Login failed");
     }
   };
 
   return (
-    <div className="login-root">
-      <div className="login-card glass">
-        <h1 className="login-title">Login</h1>
-        <p className="login-subtitle">
-          Login to continue your mock exam
-        </p>
+    <div className="login-wrapper">
+      <div className="login-card">
+        <h2 className="login-title">Login</h2>
+        {/* <p className="login-subtitle">Sign in to continue</p> */}
 
-        <form onSubmit={handleSubmit}>
-          <div className="login-field">
-            <label>Email</label>
+        <form onSubmit={submit}>
+          {/* EMAIL */}
+          <div className="input-group">
+            <label>Email address</label>
             <input
               type="email"
-              name="email"
-              placeholder="Enter your email"
-              value={form.email}
-              onChange={handleChange}
+              placeholder="user@example.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
             />
           </div>
 
-          <div className="login-field">
+          {/* PASSWORD */}
+          <div className="input-group">
             <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={form.password}
-              onChange={handleChange}
-            />
+            <div style={{ position: "relative" }}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ paddingRight: "40px" }}
+              />
+              <span
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: "absolute",
+                  right: "10px",
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  cursor: "pointer",
+                  color: "#2563eb",
+                }}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </div>
 
-          <button className="login-btn" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
-          </button>
-        </form>
+          {/* OPTIONS */}
+          <div className="options-row">
+            <label className="remember">
+              <input
+                type="checkbox"
+                checked={remember}
+                onChange={(e) => setRemember(e.target.checked)}
+              />
+              <span>Remember me</span>
+            </label>
 
-        <div className="login-footer">
-          New user?
-          <Link to="/register"> Create account</Link>
-        </div>
+            <span
+              className="forgot"
+              role="button"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot password?
+            </span>
+          </div>
+
+          {error && <div className="error-msg">{error}</div>}
+
+          <button type="submit" className="login-btn">
+            Login →
+          </button>
+
+          <div className="register">
+            Don’t have an account?
+            <span onClick={() => navigate("/register")}> Register</span>
+          </div>
+        </form>
       </div>
     </div>
   );

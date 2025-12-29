@@ -1,8 +1,24 @@
+require("dotenv").config();
 const http = require("http");
 const { MongoClient, ObjectId } = require("mongodb");
 const multer = require("multer");
 const upload = multer();
+const crypto = require("crypto");
+const { sendOTPEmail } = require("./middleware/mailer");
+const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
+// ================= CONFIG =================
+const OTP_EXPIRY_SECONDS = 50 * 1000;
+const MAX_OTP_ATTEMPTS = 5;
+// ================= UTILS =================
+function generateOTP() {
+  return crypto.randomInt(100000, 999999).toString();
+}
+
+function hashOTP(otp) {
+  return crypto.createHash("sha256").update(otp).digest("hex");
+}
 // ===== MongoDB connection =====
 
 const url = "mongodb://127.0.0.1:27017";
@@ -53,11 +69,12 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(409, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "User already exists" }));
       }
+      const hashedPassword = await bcrypt.hash(data.password, 10);
 
       await users.insertOne({
         fullname: data.fullname,
         email: data.email,
-        password: data.password,
+        password: hashedPassword, // ✅ hashed
         role: "Admin",
         createdAt: new Date(),
       });
@@ -75,11 +92,12 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(409, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "User already exists" }));
       }
+      const hashedPassword = await bcrypt.hash(data.password, 10);
 
       await users.insertOne({
         fullname: data.name,
         email: data.email,
-        password: data.password,
+        password: hashedPassword,
         role: "user",
         createdAt: new Date(),
       });
@@ -91,32 +109,195 @@ const server = http.createServer(async (req, res) => {
     // ================= ADMIN LOGIN =================
     else if (req.method === "POST" && req.url === "/admin/login") {
       const { email, password } = await parseBody();
-      const user = await db.collection("users").findOne({ email, password });
+      const user = await db.collection("users").findOne({ email });
 
       if (!user) {
         res.writeHead(401, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "Invalid credentials" }));
       }
 
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid credentials" }));
+      }
+
+      // ✅ Generate JWT
+      const token = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
+
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(
         JSON.stringify({
-          fullname: user.fullname,
-          email: user.email,
-          role: user.role,
+          token,
+          admin: {
+            fullname: user.fullname,
+            email: user.email,
+            role: user.role,
+          },
         })
       );
+    }
+
+    // ================= FORGOT PASSWORD (SEND OTP) =================
+    else if (req.method === "POST" && req.url === "/api/auth/forgot-password") {
+      const { email } = await parseBody();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ email });
+      if (!user) {
+        res.writeHead(404, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Email not registered" }));
+      }
+
+      const otp = generateOTP();
+
+      await users.updateOne(
+        { email },
+        {
+          $set: {
+            otpHash: hashOTP(otp),
+            otpExpires: Date.now() + OTP_EXPIRY_SECONDS,
+            otpAttempts: 0,
+            otpVerified: false,
+          },
+        }
+      );
+
+      await sendOTPEmail(email, otp);
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "OTP sent to email" }));
+    }
+
+    // ================= VERIFY OTP =================
+    else if (req.method === "POST" && req.url === "/api/auth/verify-otp") {
+      const { email, otp } = await parseBody();
+      const users = db.collection("users");
+
+      const user = await users.findOne({ email });
+
+      if (!user || !user.otpHash) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid request" }));
+      }
+
+      if (user.otpAttempts >= MAX_OTP_ATTEMPTS) {
+        res.writeHead(429, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Too many attempts" }));
+      }
+
+      if (Date.now() > user.otpExpires) {
+        res.writeHead(410, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "OTP expired" }));
+      }
+
+      if (hashOTP(otp) !== user.otpHash) {
+        await users.updateOne({ email }, { $inc: { otpAttempts: 1 } });
+
+        res.writeHead(401, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid OTP" }));
+      }
+
+      // ✅ OTP SUCCESS → GENERATE RESET TOKEN
+      const resetToken = jwt.sign(
+        { email, purpose: "reset-password" },
+        process.env.MAIL_PASS,
+        { expiresIn: "5m" }
+      );
+
+      // 🔥 CLEAR OTP DATA (VERY IMPORTANT)
+      await users.updateOne(
+        { email },
+        {
+          $unset: {
+            otpHash: "",
+            otpExpires: "",
+            otpAttempts: "",
+          },
+        }
+      );
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(
+        JSON.stringify({
+          message: "OTP verified",
+          resetToken,
+        })
+      );
+    }
+
+    // ================= RESET PASSWORD =================
+    else if (req.method === "POST" && req.url === "/api/auth/reset-password") {
+      const authHeader = req.headers.authorization;
+
+      if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Unauthorized" }));
+      }
+
+      const token = authHeader.split(" ")[1];
+
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.MAIL_PASS);
+      } catch {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Token expired or invalid" }));
+      }
+
+      if (decoded.purpose !== "reset-password") {
+        res.writeHead(403, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid token usage" }));
+      }
+
+      const { newPassword } = await parseBody();
+      const users = db.collection("users");
+
+      // ⚠️ HASH PASSWORD (IMPORTANT)
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+      await users.updateOne(
+        { email: decoded.email },
+        {
+          $set: { password: hashedPassword },
+        }
+      );
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Password reset successful" }));
     }
 
     // ================= FRONTEND LOGIN =================
     else if (req.method === "POST" && req.url === "/api/login") {
       const { email, password } = await parseBody();
-      const user = await db.collection("users").findOne({ email, password });
+
+      // Find user by email
+      const user = await db.collection("users").findOne({ email });
 
       if (!user) {
         res.writeHead(401, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "Invalid credentials" }));
       }
+
+      // Compare the password with hashed password
+      const isMatch = await bcrypt.compare(password, user.password);
+
+      if (!isMatch) {
+        res.writeHead(401, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid credentials" }));
+      }
+
+      // Optional: generate JWT for frontend users (if needed)
+      const token = jwt.sign(
+        { id: user._id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: "1d" }
+      );
 
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(
@@ -126,8 +307,9 @@ const server = http.createServer(async (req, res) => {
             id: user._id,
             name: user.fullname,
             email: user.email,
-            role: user.role,
+            role: user.role, // student
           },
+          token,
         })
       );
     }
@@ -175,13 +357,18 @@ const server = http.createServer(async (req, res) => {
       const id = req.url.split("/")[4];
       const data = await parseBody();
 
+      if (!data.name || !data.name.trim()) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Subject name is required" }));
+      }
+
       try {
         const result = await db.collection("subjects").updateOne(
           { _id: new ObjectId(id) },
           {
             $set: {
-              name: data.name.trim().toLowerCase(),
-              description: data.description,
+              name: data.name.trim(),
+              description: data.description?.trim() || "",
               updatedAt: new Date(),
             },
           }
@@ -189,24 +376,97 @@ const server = http.createServer(async (req, res) => {
 
         if (result.matchedCount === 0) {
           res.writeHead(404, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
+          return res.end(JSON.stringify({ message: "Subject not found" }));
         }
 
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "✏️ Subject updated!" }));
-      } catch {
+        res.end(JSON.stringify({ message: "Subject updated" }));
+      } catch (err) {
         res.writeHead(400, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "⚠️ Invalid subject ID!" }));
+        res.end(JSON.stringify({ message: "Invalid subject ID" }));
+      }
+    }
+    // ===================================================
+    // GET SINGLE SUBJECT
+    // ===================================================
+    else if (
+      req.method === "GET" &&
+      req.url.startsWith("/api/admin/subjects/") &&
+      req.url.split("/").length === 5
+    ) {
+      try {
+        const id = req.url.split("/")[4];
+
+        const subject = await db
+          .collection("subjects")
+          .findOne({ _id: new ObjectId(id) });
+
+        if (!subject) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "Subject not found" }));
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify(subject));
+      } catch (err) {
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid subject ID" }));
       }
     }
 
     // ===================================================
     // GET ALL SUBJECTS
     // ===================================================
-    else if (req.method === "GET" && req.url === "/api/admin/subjects") {
-      const subjects = await db.collection("subjects").find({}).toArray();
-      res.writeHead(200, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify(subjects));
+    else if (
+      req.method === "GET" &&
+      req.url.startsWith("/api/admin/subjects")
+    ) {
+      try {
+        const urlObj = new URL(req.url, `http://${req.headers.host}`);
+
+        const page = parseInt(urlObj.searchParams.get("page")) || 1;
+        const limitParam = urlObj.searchParams.get("limit");
+        const search = urlObj.searchParams.get("search") || "";
+
+        // 🔹 limit logic
+        // limit = null → ALL
+        // limit = 0 → ALL
+        // limit > 0 → pagination
+        const limit = limitParam === null ? null : parseInt(limitParam);
+
+        const query = search ? { name: { $regex: search, $options: "i" } } : {};
+
+        const collection = db.collection("subjects");
+
+        const total = await collection.countDocuments(query);
+
+        let cursor = collection.find(query).sort({ createdAt: -1 });
+
+        // 🔹 Apply pagination ONLY when limit is valid (>0)
+        if (limit && limit > 0) {
+          cursor = cursor.skip((page - 1) * limit).limit(limit);
+        }
+
+        const subjects = await cursor.toArray();
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({
+            subjects,
+            totalSubjects: total,
+
+            // 🔹 pagination meta only when paginated
+            totalPages: limit && limit > 0 ? Math.ceil(total / limit) : 1,
+
+            currentPage: limit && limit > 0 ? page : 1,
+
+            limit: limit && limit > 0 ? limit : "ALL",
+          })
+        );
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Server error" }));
+      }
     }
 
     // ===================================================
@@ -271,7 +531,7 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(
           JSON.stringify({
-            message: "🗑️ Subject & all questions deleted successfully",
+            message: `🗑️Subject & all questions deleted successfully`,
             subject: subject.name,
             deletedQuestions: qResult.deletedCount,
           })
@@ -312,9 +572,9 @@ const server = http.createServer(async (req, res) => {
     // ===================================================
     else if (
       req.method === "PUT" &&
-      req.url.startsWith("/api/admin/questions/")
+      req.url.match(/^\/api\/admin\/questions\/[a-f\d]{24}$/)
     ) {
-      const id = req.url.split("/")[3];
+      const id = req.url.split("/")[4];
       const data = await parseBody();
 
       try {
@@ -322,10 +582,10 @@ const server = http.createServer(async (req, res) => {
           { _id: new ObjectId(id) },
           {
             $set: {
+              subjectId: data.subjectId,
               question: data.question,
               options: data.options,
-              correctAnswer: data.correctAnswer,
-              subjectId: data.subjectId,
+              correctAnswer: Number(data.correctAnswer),
               updatedAt: new Date(),
             },
           }
@@ -333,26 +593,113 @@ const server = http.createServer(async (req, res) => {
 
         if (result.matchedCount === 0) {
           res.writeHead(404, { "Content-Type": "application/json" });
-          return res.end(JSON.stringify({ message: "❌ Question not found!" }));
+          return res.end(JSON.stringify({ message: "Question not found" }));
         }
 
         res.writeHead(200, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "✏️ Question updated!" }));
+        return res.end(JSON.stringify({ message: "Question updated" }));
       } catch {
         res.writeHead(400, { "Content-Type": "application/json" });
-        return res.end(JSON.stringify({ message: "⚠️ Invalid question ID!" }));
+        return res.end(JSON.stringify({ message: "Update failed" }));
       }
     }
 
     // ===================================================
-    // GET ALL QUESTIONS
+    // GET SINGLE QUESTION
     // ===================================================
-    else if (req.method === "GET" && req.url === "/api/admin/questions") {
-      const questions = await db.collection("questions").find({}).toArray();
-      const subjects = await db.collection("subjects").find({}).toArray();
+    else if (
+  req.method === "GET" &&
+  /^\/api\/admin\/questions\/[a-f\d]{24}(\?.*)?$/.test(req.url)
+) {
+  try {
+    const id = req.url.split("/").pop().split("?")[0];
 
+    const question = await db.collection("questions").findOne({
+      _id: new ObjectId(id),
+    });
+
+    if (!question) {
+      res.writeHead(404, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "Question not found" }));
+    }
+
+    const subject = await db.collection("subjects").findOne({
+      _id: new ObjectId(question.subjectId),
+    });
+
+    res.writeHead(200, {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+      "Surrogate-Control": "no-store",
+    });
+
+    return res.end(
+      JSON.stringify({
+        _id: question._id.toString(),
+        subjectId: question.subjectId.toString(),
+        question: question.question,
+        options: question.options,
+        correctAnswer: question.correctAnswer,
+        subjectName: subject?.displayName || subject?.name || "Unknown",
+      })
+    );
+  } catch (err) {
+    console.error(err);
+    res.writeHead(400, { "Content-Type": "application/json" });
+    return res.end(JSON.stringify({ message: "Invalid Question ID" }));
+  }
+}
+
+    // ===================================================
+    // GET QUESTIONS (Pagination + Search + Subject Filter)
+    // ===================================================
+    else if (
+      req.method === "GET" &&
+      req.url.startsWith("/api/admin/questions")
+    ) {
+      const urlObj = new URL(req.url, `http://${req.headers.host}`);
+
+      const page = parseInt(urlObj.searchParams.get("page")) || 1;
+      const limitParam = urlObj.searchParams.get("limit") || "10";
+      const search = urlObj.searchParams.get("search") || "";
+      const subjectId = urlObj.searchParams.get("subjectId");
+
+      const query = {};
+
+      if (search) {
+        query.title = { $regex: search, $options: "i" };
+      }
+
+      if (subjectId && subjectId !== "all") {
+        query.subjectId = subjectId;
+      }
+
+      const subjects = await db.collection("subjects").find({}).toArray();
       const subjectMap = {};
-      subjects.forEach((s) => (subjectMap[s._id.toString()] = s.name));
+      subjects.forEach(
+        (s) => (subjectMap[s._id.toString()] = s.displayName || s.name)
+      );
+
+      const total = await db.collection("questions").countDocuments(query);
+
+      let questionsQuery = db
+        .collection("questions")
+        .find(query)
+        .sort({ createdAt: -1 });
+
+      let questions;
+
+      if (limitParam === "all") {
+        questions = await questionsQuery.toArray();
+      } else {
+        const limit = parseInt(limitParam);
+        questions = await questionsQuery
+          .skip((page - 1) * limit)
+          .limit(limit)
+          .toArray();
+      }
 
       const final = questions.map((q) => ({
         ...q,
@@ -360,11 +707,57 @@ const server = http.createServer(async (req, res) => {
       }));
 
       res.writeHead(200, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify(final));
+      return res.end(
+        JSON.stringify({
+          questions: final,
+          total,
+          totalPages:
+            limitParam === "all" ? 1 : Math.ceil(total / parseInt(limitParam)),
+          currentPage: page,
+        })
+      );
     }
 
     // ===================================================
-    // DELETE QUESTION
+    // DELETE SINGLE QUESTION
+    // ===================================================
+    else if (
+      req.method === "DELETE" &&
+      req.url.startsWith("/api/admin/questions/") &&
+      req.url.split("/").length === 5
+    ) {
+      try {
+        const id = req.url.split("/")[4];
+
+        // Validate ObjectId
+        if (!ObjectId.isValid(id)) {
+          res.writeHead(400, { "Content-Type": "application/json" });
+          return res.end(
+            JSON.stringify({ message: "⚠️ Invalid question ID!" })
+          );
+        }
+
+        const result = await db
+          .collection("questions")
+          .deleteOne({ _id: new ObjectId(id) });
+
+        if (result.deletedCount === 0) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "❌ Question not found!" }));
+        }
+
+        res.writeHead(200, { "Content-Type": "application/json" });
+        return res.end(
+          JSON.stringify({ message: "🗑️ Question deleted successfully!" })
+        );
+      } catch (err) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Server error" }));
+      }
+    }
+
+    // ===================================================
+    // DELETE QUESTION ALL
     // ===================================================
     else if (
       req.method === "DELETE" &&

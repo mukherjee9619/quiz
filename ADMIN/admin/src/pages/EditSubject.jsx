@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { useNavigate, useParams } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function EditSubject() {
   const { id } = useParams();
@@ -12,46 +13,73 @@ export default function EditSubject() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
 
-  // Load single subject (backend has NO GET id route, so filter manually)
-  const loadSubject = async () => {
-    try {
-      const res = await fetch(`http://127.0.0.1:8081/api/admin/subjects`);
-      const list = await res.json();
+  const token =
+    localStorage.getItem("admin_token") ||
+    sessionStorage.getItem("admin_token");
 
-      if (!res.ok) {
-        alert("Failed to load subjects");
-        navigate("/subjects");
-        return;
-      }
-
-      const subject = list.find((s) => s._id === id);
-
-      if (!subject) {
-        alert("Subject not found!");
-        navigate("/subjects");
-        return;
-      }
-
-      setName(subject.name);
-      setDescription(subject.description || "");
-      setLoading(false);
-    } catch (err) {
-      console.error(err);
-      alert("Could not load subject");
-      navigate("/subjects");
-    }
-  };
-
+  /* ===============================
+     🔹 AUTH GUARD
+  =============================== */
   useEffect(() => {
-    loadSubject();
-  }, []);
+    if (!token) {
+      toast.error("Session expired. Please login again.");
+      navigate("/admin/login");
+    }
+  }, [token, navigate]);
 
-  // Update Subject
+  /* ===============================
+     🔹 LOAD SINGLE SUBJECT
+  =============================== */
+  useEffect(() => {
+    if (!token || !id) return;
+
+    const controller = new AbortController();
+
+    const loadSubject = async () => {
+      try {
+        setLoading(true);
+
+        const res = await fetch(
+          `http://127.0.0.1:8081/api/admin/subjects/${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+            signal: controller.signal,
+          }
+        );
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          throw new Error(data.message || "Failed to load subject");
+        }
+
+        setName(data.name);
+        setDescription(data.description || "");
+      } catch (err) {
+        if (err.name !== "AbortError") {
+          toast.error(err.message || "Unable to load subject");
+          navigate("/subjects");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSubject();
+
+    return () => controller.abort();
+  }, [id, token, navigate]);
+
+  /* ===============================
+     🔹 UPDATE SUBJECT
+  =============================== */
   const updateSubject = async (e) => {
     e.preventDefault();
 
     if (!name.trim()) {
-      alert("Subject name is required");
+      toast.error("Subject name is required");
       return;
     }
 
@@ -62,29 +90,35 @@ export default function EditSubject() {
         `http://127.0.0.1:8081/api/admin/subjects/${id}`,
         {
           method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, description }),
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            name: name.trim(),
+            description: description.trim(),
+          }),
         }
       );
 
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.message || "Update failed");
-        setUpdating(false);
-        return;
+        throw new Error(data.message || "Update failed");
       }
 
-      alert("Subject updated successfully!");
+      toast.success("Subject updated successfully");
       navigate("/subjects");
     } catch (err) {
-      console.error(err);
-      alert("Server error! Try again");
+      toast.error(err.message || "Update failed");
     } finally {
       setUpdating(false);
     }
   };
 
+  /* ===============================
+     🔹 LOADING STATE
+  =============================== */
   if (loading) {
     return (
       <div className="layout">
@@ -92,8 +126,8 @@ export default function EditSubject() {
         <main className="main">
           <Topbar title="Edit Subject" />
           <div className="content">
-            <div className="card-admin">
-              <h4>Loading subject...</h4>
+            <div className="card-admin text-center">
+              <h5>Loading subject...</h5>
             </div>
           </div>
         </main>
@@ -101,6 +135,9 @@ export default function EditSubject() {
     );
   }
 
+  /* ===============================
+     🔹 UI
+  =============================== */
   return (
     <div className="layout">
       <Sidebar />
@@ -114,28 +151,38 @@ export default function EditSubject() {
 
             <form onSubmit={updateSubject} className="mt-3">
               <div className="mb-3">
-                <label className="form-label fw-bold">Subject Name</label>
+                <label className="form-label fw-bold">
+                  Subject Name
+                </label>
                 <input
                   type="text"
                   className="form-control"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Enter subject name"
+                  autoFocus
                 />
               </div>
 
               <div className="mb-3">
-                <label className="form-label fw-bold">Description</label>
+                <label className="form-label fw-bold">
+                  Description
+                </label>
                 <textarea
                   className="form-control"
                   rows="3"
                   value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  onChange={(e) =>
+                    setDescription(e.target.value)
+                  }
                   placeholder="Enter description"
-                ></textarea>
+                />
               </div>
 
-              <button className="btn btn-primary" disabled={updating}>
+              <button
+                className="btn btn-primary"
+                disabled={updating}
+              >
                 {updating ? "Updating..." : "Update Subject"}
               </button>
             </form>

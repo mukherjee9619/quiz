@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
-import toast from "react-hot-toast";
 import "../styles/StartQuiz.css";
 
 export default function StartQuiz() {
@@ -11,14 +10,17 @@ export default function StartQuiz() {
   const [accepted, setAccepted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  /* ---------------- Fullscreen Detection ---------------- */
   useEffect(() => {
     const onChange = () =>
       setIsFullscreen(!!document.fullscreenElement);
+
     document.addEventListener("fullscreenchange", onChange);
     return () =>
       document.removeEventListener("fullscreenchange", onChange);
   }, []);
 
+  /* ---------------- Fetch Subject & Questions ---------------- */
   useEffect(() => {
     fetch("http://127.0.0.1:8081/api/admin/subjects")
       .then(res => res.json())
@@ -29,30 +31,46 @@ export default function StartQuiz() {
 
     fetch("http://127.0.0.1:8081/api/admin/questions")
       .then(res => res.json())
-      .then(data =>
-        setQuestions(data.filter(q => q.subjectId === subjectId))
-      );
+      .then(data => {
+        const filtered = data.filter(
+          q => q.subjectId === subjectId
+        );
+        setQuestions(filtered);
+      });
   }, [subjectId]);
+
+  /* ---------------- Exam Calculations ---------------- */
+  const totalQuestions = questions.length;
+
+  const totalMarks = totalQuestions;
+  const passingMarks = Math.ceil(totalQuestions * 0.4);
+
+  // ⏱ Duration = questions × 0.7 minutes
+  const durationMinutes = Math.ceil(totalQuestions * 0.7);
 
   const startAllowed = accepted && isFullscreen;
 
+  /* ---------------- UI ---------------- */
   return (
     <div className="start-quiz-page">
       <div className="start-card">
-        <h2>{subjectName || "Loading..."}</h2>
+        <h2>{subjectName || "Instructions..."}</h2>
 
         <div className="exam-meta">
-          <div>Total Questions: {questions.length}</div>
-          <div>Total Marks: {questions.length}</div>
-          <div>Passing Marks: {Math.ceil(questions.length * 0.4)}</div>
-          <div>Duration: 30 Minutes</div>
+          <div>Total Questions: {totalQuestions}</div>
+          <div>Total Marks: {totalMarks}</div>
+          <div>Passing Marks: {passingMarks}</div>
+          <div>Duration: {durationMinutes} Minutes</div>
         </div>
 
         <ul className="instructions">
-          <li>No negative marking</li>
+          <li>
+            <strong>Negative Marking:</strong> −1/3 for each wrong answer
+          </li>
+          <li>Unattempted questions carry no penalty</li>
           <li>Do not refresh or switch tabs</li>
-          <li>Fullscreen is mandatory</li>
-          <li>Auto submit on time expiry</li>
+          <li>Fullscreen mode is mandatory</li>
+          <li>Exam will auto-submit on time expiry</li>
         </ul>
 
         <label className="rules-check">
@@ -61,12 +79,15 @@ export default function StartQuiz() {
             checked={accepted}
             onChange={(e) => setAccepted(e.target.checked)}
           />
-          I agree to instructions
+          I agree to all instructions
         </label>
 
         {!isFullscreen && (
           <button
-            onClick={() => document.documentElement.requestFullscreen()}
+            className="fullscreen-btn"
+            onClick={() =>
+              document.documentElement.requestFullscreen()
+            }
           >
             Enter Fullscreen
           </button>

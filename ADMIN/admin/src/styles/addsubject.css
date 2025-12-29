@@ -1,143 +1,26 @@
-/* ================================
-   GLASS CARD UI
-================================== */
-.glass-form-card {
-  max-width: 650px;
+.add-subject-card {
+  max-width: 600px;
   margin: auto;
-  padding: 35px;
-  border-radius: 20px;
-  background: rgba(15, 15, 30, 0.55);
-  backdrop-filter: blur(14px) saturate(140%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  box-shadow: 0 8px 35px rgba(0, 0, 0, 0.45);
-  animation: fadeSlide 0.6s ease-out;
 }
 
-/* Entry Animation */
-@keyframes fadeSlide {
-  0% { opacity: 0; transform: translateY(25px) scale(0.97); }
-  100% { opacity: 1; transform: translateY(0) scale(1); }
-}
-
-/* ================================
-   FORM TITLE
-================================== */
-.form-title {
-  text-align: center;
-  margin-bottom: 28px;
-  font-size: 24px;
-  font-weight: 700;
-  color: #ffffff;
-  letter-spacing: .6px;
-  text-shadow: 0 0 12px rgba(0, 188, 255, 0.6);
-}
-
-/* ================================
-   FLOATING INPUT GROUP
-================================== */
-.input-group-floating {
-  position: relative;
-  margin-bottom: 28px;
-}
-
-/* Inputs */
-.input-group-floating input,
-.input-group-floating textarea {
+.add-subject-card input,
+.add-subject-card textarea {
   width: 100%;
-  padding: 15px 14px;
-  background: rgba(255,255,255,0.07);
-  border: 1px solid rgba(255,255,255,0.22);
-  border-radius: 12px;
-  color: #fff;
-  font-size: 15px;
-  outline: none;
-  transition: .3s ease;
-  backdrop-filter: blur(4px);
-}
-
-.input-group-floating input:hover,
-.input-group-floating textarea:hover {
-  background: rgba(255,255,255,0.12);
-}
-
-/* Input focus glow */
-.input-group-floating input:focus,
-.input-group-floating textarea:focus {
-  border-color: #33aaff;
-  background: rgba(255,255,255,0.18);
-  box-shadow: 0 0 12px rgba(51,170,255,0.5),
-              0 0 35px rgba(51,170,255,0.3);
-}
-
-/* Floating Label */
-.input-group-floating label {
-  position: absolute;
-  top: 50%;
-  left: 14px;
-  transform: translateY(-50%);
-  color: #bbb;
-  pointer-events: none;
-  transition: .25s;
-  font-size: 15px;
-  background: transparent;
-  padding: 0 5px;
-}
-
-/* Float Animation */
-.input-group-floating input:focus + label,
-.input-group-floating input:not(:placeholder-shown) + label,
-.input-group-floating textarea:focus + label,
-.input-group-floating textarea:not(:placeholder-shown) + label {
-  top: -10px;
-  left: 12px;
-  background: #0c0c15;
-  padding: 0 6px;
-  font-size: 12px;
-  color: #33aaff;
-  text-shadow: 0 0 8px rgba(51,170,255,0.6);
-}
-
-/* ================================
-   SUBMIT BUTTON
-================================== */
-.btn-submit {
-  width: 100%;
-  margin-top: 8px;
-  padding: 15px;
-  background: linear-gradient(135deg, #1e90ff, #0070ff, #0053d6);
+  padding: 12px;
+  margin-top: 6px;
+  margin-bottom: 14px;
+  background: #0f172a;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
   color: white;
-  font-size: 17px;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: .25s ease-out;
+}
+
+.add-subject-card label {
   font-weight: 600;
-  letter-spacing: .5px;
-  box-shadow: 0 4px 18px rgba(0, 128, 255, 0.4);
+  color: #cbd5f5;
 }
 
-/* Hover effect */
-.btn-submit:hover {
-  background: linear-gradient(135deg, #0b7be0, #0060cf, #0047a8);
-  transform: translateY(-3px);
-  box-shadow: 0 6px 25px rgba(0, 128, 255, 0.55);
-}
-
-/* Click effect */
-.btn-submit:active {
-  transform: translateY(0);
-  box-shadow: 0 3px 10px rgba(0, 128, 255, 0.4);
-}
-
-/* ================================
-   RESPONSIVE
-================================== */
-@media (max-width: 600px) {
-  .glass-form-card {
-    padding: 22px;
-  }
-
-  .form-title {
-    font-size: 21px;
-  }
+.form-actions {
+  display: flex;
+  gap: 10px;
 }

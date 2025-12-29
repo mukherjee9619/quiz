@@ -3,39 +3,36 @@ import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import "../styles/addsubject.css";
-import "../styles/confirmModal.css";
+import "../styles/subject.css";
+
+const LIMIT = 8;
 
 export default function Subjects() {
   const [list, setList] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Modal state
-  const [showModal, setShowModal] = useState(false);
-  const [selectedSubject, setSelectedSubject] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
 
-  const shortText = (text, max = 40) => {
-    if (!text) return "No description";
-    return text.length > max ? text.substring(0, max) + "..." : text;
-  };
-
-  // ----------------------------------------
-  // ✅ Fetch subjects
-  // ----------------------------------------
+  /* =====================
+     🔹 Load Subjects
+  ===================== */
   const loadSubjects = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8081/api/admin/subjects");
+      setLoading(true);
+
+      const res = await fetch(
+        `http://127.0.0.1:8081/api/admin/subjects?page=${page}&limit=${LIMIT}&search=${search}`
+      );
+
       const data = await res.json();
 
-      const cleanData = data
-        .filter((x) => x?.name)
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-      setList(cleanData);
-    } catch (err) {
-      console.error("Failed to load subjects:", err);
+      setList(data.subjects || []);
+      setTotalPages(data.totalPages || 1);
+    } catch {
+      toast.error("Failed to load subjects");
     } finally {
       setLoading(false);
     }
@@ -43,47 +40,28 @@ export default function Subjects() {
 
   useEffect(() => {
     loadSubjects();
-  }, []);
+  }, [page, search]);
 
-  // ----------------------------------------
-  // 🗑️ Open delete confirmation
-  // ----------------------------------------
-  const openDeleteModal = (subject) => {
-    setSelectedSubject(subject);
-    setShowModal(true);
-  };
-
-  // ----------------------------------------
-  // ❌ Cancel delete
-  // ----------------------------------------
-  const cancelDelete = () => {
-    setShowModal(false);
-    setSelectedSubject(null);
-  };
-
-  // ----------------------------------------
-  // ✅ Confirm delete
-  // ----------------------------------------
-  const confirmDelete = async () => {
-    if (!selectedSubject) return;
+  /* =====================
+     🔹 Delete Subject
+  ===================== */
+  const remove = async (id) => {
+    if (!window.confirm("Delete subject and all questions?")) return;
 
     try {
       const res = await fetch(
-        `http://127.0.0.1:8081/api/admin/questions/subject/${selectedSubject._id}`,
+        `http://127.0.0.1:8081/api/admin/subjects/${id}`,
         { method: "DELETE" }
       );
 
       const data = await res.json();
-     toast(data.message || "Deleted successfully");
 
-      setList((prev) =>
-        prev.filter((sub) => sub._id !== selectedSubject._id)
-      );
+      if (!res.ok) throw new Error(data.message);
+
+      toast.success("Subject deleted");
+      loadSubjects();
     } catch (err) {
-      console.error("Delete failed:", err);
-      toast("Failed to delete subject");
-    } finally {
-      cancelDelete();
+      toast.error(err.message || "Delete failed");
     }
   };
 
@@ -97,9 +75,19 @@ export default function Subjects() {
         <div className="content">
           <div className="card-admin">
 
-            {/* Header */}
-            <div className="d-flex justify-content-between align-items-center">
-              <h5>Subjects</h5>
+            {/* ===== HEADER ===== */}
+            <div className="subject-header">
+              <h5>Subject Lists</h5>
+
+              <input
+                className="subject-search"
+                placeholder="Search subject..."
+                value={search}
+                onChange={(e) => {
+                  setPage(1);
+                  setSearch(e.target.value);
+                }}
+              />
 
               <button
                 className="btn btn-primary"
@@ -109,82 +97,66 @@ export default function Subjects() {
               </button>
             </div>
 
-            {/* Loading */}
-            {loading && <p className="muted mt-3">Loading...</p>}
-
-            {/* Empty */}
-            {!loading && list.length === 0 && (
-              <p className="muted mt-3">No subjects found.</p>
-            )}
-
-            {/* List */}
-            {!loading && list.length > 0 && (
-              <div style={{ marginTop: 12 }}>
-                {list.map((s) => (
-                  <div key={s._id} className="list-row">
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 800 }}>
-                        {s.name.toUpperCase()}
-                      </div>
-                      <div className="muted">
-                        {shortText(s.description, 270)}
-                      </div>
+            {/* ===== LIST ===== */}
+            {loading ? (
+              <p className="text-center muted">Loading...</p>
+            ) : (
+              list.map((s) => (
+                <div key={s._id} className="list-row">
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontWeight: 800 }}>
+                      {(s.displayName || s.name).toUpperCase()}
                     </div>
-
-                    <div>
-                      <button
-                        className="btn btn-outline-secondary btn-sm me-2"
-                        onClick={() => navigate(`/subjects/edit/${s._id}`)}
-                      >
-                        Edit
-                      </button>
-
-                      <button
-                        className="btn btn-danger btn-sm"
-                        onClick={() => openDeleteModal(s)}
-                      >
-                        Delete
-                      </button>
+                    <div className="muted">
+                      {s.description || "No description"}
                     </div>
                   </div>
-                ))}
+
+                  <div>
+                    <button
+                      className="btn btn-outline-secondary btn-sm me-2"
+                      onClick={() => navigate(`/subjects/edit/${s._id}`)}
+                    >
+                      Edit
+                    </button>
+
+                    <button
+                      className="btn btn-danger btn-sm"
+                      onClick={() => remove(s._id)}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+
+            {/* ===== PAGINATION ===== */}
+            {totalPages > 1 && (
+              <div className="pagination-bar">
+                <button
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                >
+                  Prev
+                </button>
+
+                <span>
+                  Page {page} / {totalPages}
+                </span>
+
+                <button
+                  disabled={page === totalPages}
+                  onClick={() => setPage(page + 1)}
+                >
+                  Next
+                </button>
               </div>
             )}
 
           </div>
         </div>
       </main>
-
-      {/* ================= DELETE CONFIRM MODAL ================= */}
-      {showModal && (
-        <div className="confirm-overlay">
-          <div className="confirm-box">
-            <h4>Are you want to delete this {selectedSubject?.name.toUpperCase()} ?</h4>
-
-            <p>
-              This will permanently delete
-              <span> {selectedSubject?.name.toUpperCase()} </span>
-              and all its questions.
-            </p>
-
-            <div className="confirm-actions">
-              <button
-                className="btn btn-secondary"
-                onClick={cancelDelete}
-              >
-                Cancel
-              </button>
-
-              <button
-                className="btn btn-danger"
-                onClick={confirmDelete}
-              >
-                Yes, Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

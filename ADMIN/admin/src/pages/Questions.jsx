@@ -1,123 +1,182 @@
 import React, { useEffect, useState } from "react";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
-import { getJSON, del, uploadJSONFile } from "../services/api";
+import { getJSON, del } from "../services/api";
+import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import "../styles/question.css";
 
+/* 🔹 Helpers */
+const toTitleCase = (str = "") =>
+  str
+    .toLowerCase()
+    .split(" ")
+    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(" ");
+
+const truncate = (text = "", max = 20) =>
+  text.length > max ? text.slice(0, max) + "..." : text;
+
 export default function Questions() {
-  const [list, setList] = useState([]);
-  const [file, setFile] = useState(null);
   const navigate = useNavigate();
 
-  // Fetch questions on load
+  const [questions, setQuestions] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+
+  const [search, setSearch] = useState("");
+  const [subjectId, setSubjectId] = useState("all");
+
+  const [page, setPage] = useState(1);
+  const limit = 10;
+
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
+
+  /* ================= Fetch Subjects ================= */
   useEffect(() => {
-    getJSON("/api/admin/questions").then((res) => {
-      if (Array.isArray(res)) setList(res);
+    getJSON("/api/admin/subjects?limit=all").then(res => {
+      if (res?.subjects) setSubjects(res.subjects);
     });
   }, []);
-console.log("list",list);
 
-  const remove = async (id) => {
-    if (!confirm("Delete question?")) return;
-    await del(`/api/admin/questions/${id}`);
-    setList((prev) => prev.filter((q) => q._id !== id));
+  /* ================= Fetch Questions ================= */
+  useEffect(() => {
+    loadQuestions();
+  }, [page, search, subjectId]);
+
+  const loadQuestions = async () => {
+    setLoading(true);
+    try {
+      const res = await getJSON(
+        `/api/admin/questions?page=${page}&limit=${limit}&search=${search}&subjectId=${subjectId}`
+      );
+      setQuestions(res.questions || []);
+      setTotalPages(res.totalPages || 1);
+    } catch {
+      toast.error("Failed to load questions");
+    }
+    setLoading(false);
   };
 
-  const upload = async () => {
-    if (!file) return alert("Please select a JSON file.");
-
-    const res = await uploadJSONFile("/api/admin/questions/import", file);
-
-    if (res?.ok) {
-      alert(`Imported ${res.inserted || 0} questions.`);
-
-      // Refresh list after import
-      const updated = await getJSON("/api/admin/questions");
-      setList(updated);
-    } else {
-      alert(res?.message || "Import failed.");
-    }
+  /* ================= Delete ================= */
+  const remove = async (id) => {
+    if (!window.confirm("Delete question?")) return;
+    const res = await del(`/api/admin/questions/${id}`);
+    if (res?.message) toast.success(res.message);
+    loadQuestions();
   };
 
   return (
     <div className="layout">
       <Sidebar />
+
       <main className="main">
         <Topbar title="Questions" />
 
         <div className="content">
-          {/* ========= TOP CARD: Add Question + Upload ========= */}
-          <div className="card-admin mb-4">
-            <h5 className="mb-3">Add & Import Questions</h5>
 
-            {/* Add Question button */}
+          {/* ================= HEADER FILTER BAR ================= */}
+          <div className="question-header-bar">
+            {/* Search */}
+            <input
+              className="question-search"
+              placeholder="Search question..."
+              value={search}
+              onChange={(e) => {
+                setPage(1);
+                setSearch(e.target.value);
+              }}
+            />
+
+            {/* Subject */}
+            <select
+              className="question-subject"
+              value={subjectId}
+              onChange={(e) => {
+                setPage(1);
+                setSubjectId(e.target.value);
+              }}
+            >
+              <option value="all">All Subjects</option>
+              {subjects.map((s) => {
+                const name = toTitleCase(s.displayName || s.name);
+                return (
+                  <option key={s._id} value={s._id}>
+                    {truncate(name, 25)}
+                  </option>
+                );
+              })}
+            </select>
+
+            {/* Button */}
             <button
-              className="btn btn-primary mb-3"
+              className="question-add-btn"
               onClick={() => navigate("/questions/add")}
             >
               Add Question
             </button>
-
-            <hr />
-
-            {/* Upload JSON */}
-            <div className="d-flex align-items-center mt-3">
-              <input
-                type="file"
-                accept=".json"
-                onChange={(e) => setFile(e.target.files[0])}
-                style={{ width: 200 }}
-              />
-
-              <button
-                className="btn btn-outline-secondary ms-2"
-                onClick={upload}
-              >
-                Upload JSON
-              </button>
-            </div>
           </div>
 
-          {/* ========= BOTTOM CARD: Questions List ========= */}
-          {/* ========= BOTTOM CARD: Questions List ========= */}
-          <div className="card-admin">
-            <h5 className="mb-3">Questions List</h5>
+          {/* ================= QUESTIONS LIST ================= */}
+          <div className="card-admin question-scroll">
+            {loading && <p className="text-center">Loading...</p>}
 
-            {/* Scrollable area */}
-            <div
-            className="question-scroll"
-              style={{
-                maxHeight: "400px", // adjust height as you like
-                overflowY: "auto",
-                paddingRight: "10px",
-              }}
-            >
-              {list.map((q) => (
-                <div key={q._id} className="list-row">
-                  <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 800 }}>{q.title}</div>
-                    <div className="muted">Subject: {q.subjectName}</div>
-                  </div>
+            {!loading && questions.length === 0 && (
+              <p className="text-center muted">No questions found</p>
+            )}
 
-                  <div>
-                    <button
-                      onClick={() => navigate(`/questions/edit/${q._id}`)}
-                      className="btn btn-outline-secondary btn-sm me-2"
-                    >
-                      Edit
-                    </button>
-
-                    <button
-                      onClick={() => remove(q._id)}
-                      className="btn btn-danger btn-sm"
-                    >
-                      Delete
-                    </button>
+            {questions.map((q) => (
+              <div key={q._id} className="list-row">
+                <div style={{ flex: 1 }}>
+                  <strong>{q.title}</strong>
+                  <div className="muted">
+                    Subject: {toTitleCase(q.subjectName)}
                   </div>
                 </div>
-              ))}
-            </div>
+
+                <div>
+                  <button
+                    className="btn btn-outline-secondary btn-sm me-2"
+                    onClick={() => navigate(`/questions/edit/${q._id}`)}
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => remove(q._id)}
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* ================= PAGINATION ================= */}
+            {totalPages > 1 && (
+              <div className="pagination-wrapper">
+                <button
+                  className="page-btn"
+                  disabled={page === 1}
+                  onClick={() => setPage(page - 1)}
+                >
+                  ◀ Prev
+                </button>
+
+                <span className="page-info">
+                  Page <strong>{page}</strong> of{" "}
+                  <strong>{totalPages}</strong>
+                </span>
+
+                <button
+                  className="page-btn"
+                  disabled={page === totalPages}
+                  onClick={() => setPage(page + 1)}
+                >
+                  Next ▶
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </main>

@@ -13,14 +13,15 @@ export default function Register() {
     confirmPassword: "",
   });
 
+  const [showPass, setShowPass] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  /* ================= HANDLE CHANGE ================= */
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  /* ================= SUBMIT ================= */
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -43,20 +44,17 @@ export default function Register() {
 
       const res = await fetch("http://127.0.0.1:8081/api/register", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ name, email, password }),
       });
 
       const data = await res.json();
+      if (!res.ok) throw new Error(data.message);
 
-      if (!res.ok) {
-        throw new Error(data.message || "Registration failed");
-      }
+      setSuccess(true);
+      toast.success("Account created successfully");
 
-      toast.success("Registration successful. Please login.");
-      navigate("/login");
+      setTimeout(() => navigate("/login"), 900);
     } catch (err) {
       toast.error(err.message);
     } finally {
@@ -65,60 +63,78 @@ export default function Register() {
   };
 
   return (
-    <div className="register-root">
-      <div className="register-card glass">
-        <h1 className="register-title">Create Account</h1>
-        <p className="register-subtitle">
-          Register to appear for the mock exam
-        </p>
+    <div className="register-page">
+      <div className={`register-box ${success ? "register-success" : ""}`}>
+        <div className="register-header">
+          <h1>Create Your Account 🚀</h1>
+          <p>Join SM Quiz and start practicing today</p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="register-field">
-            <label>Full Name</label>
+        <form onSubmit={handleSubmit} className="register-form">
+          {/* NAME */}
+          <div className="field">
             <input
               type="text"
               name="name"
-              placeholder="Enter your full name"
               value={form.name}
               onChange={handleChange}
+              required
             />
+            <label>Full Name</label>
+            <span className="field-icon">👤</span>
           </div>
 
-          <div className="register-field">
-            <label>Email</label>
+          {/* EMAIL */}
+          <div className="field">
             <input
               type="email"
               name="email"
-              placeholder="Enter your email"
               value={form.email}
               onChange={handleChange}
+              required
             />
+            <label>Email Address</label>
+            <span className="field-icon">📧</span>
           </div>
 
-          <div className="register-field">
-            <label>Password</label>
+          {/* PASSWORD */}
+          <div className="field">
             <input
-              type="password"
+              type={showPass ? "text" : "password"}
               name="password"
-              placeholder="Create password"
               value={form.password}
               onChange={handleChange}
+              required
             />
+            <label>Password</label>
+            <span
+              className="field-icon toggle"
+              onClick={() => setShowPass(!showPass)}
+            >
+              {showPass ? "🙈" : "👁️"}
+            </span>
           </div>
 
-          <div className="register-field">
-            <label>Confirm Password</label>
+          {/* CONFIRM PASSWORD */}
+          <div className="field">
             <input
-              type="password"
+              type={showConfirm ? "text" : "password"}
               name="confirmPassword"
-              placeholder="Confirm password"
               value={form.confirmPassword}
               onChange={handleChange}
+              required
             />
+            <label>Confirm Password</label>
+            <span
+              className="field-icon toggle"
+              onClick={() => setShowConfirm(!showConfirm)}
+            >
+              {showConfirm ? "🙈" : "👁️"}
+            </span>
           </div>
 
           <button className="register-btn" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Creating account..." : "Create Account"}
           </button>
         </form>
 

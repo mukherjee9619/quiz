@@ -9,6 +9,7 @@ import Quiz from "./pages/Quiz";
 import Result from "./pages/Result";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import Review from "./pages/Review";
 
 // Route Protection
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -36,10 +37,17 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Start Quiz Page (subject intro) */}
-        <Route path="/start/:subjectId" element={<StartQuiz />} />
+        {/* 🔒 Start Quiz (PROTECTED) */}
+        <Route
+          path="/start/:subjectId"
+          element={
+            <ProtectedRoute>
+              <StartQuiz />
+            </ProtectedRoute>
+          }
+        />
 
-        {/* 🔒 PROTECTED EXAM ROUTE */}
+        {/* 🔒 Exam Page */}
         <Route
           path="/quiz/:subjectId"
           element={
@@ -49,11 +57,28 @@ export default function App() {
           }
         />
 
-        {/* Result Page */}
-        <Route path="/result" element={<Result />} />
+        {/* 🔒 Result Page */}
+        <Route
+          path="/result"
+          element={
+            <ProtectedRoute>
+              <Result />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 🔒 Review Page */}
+        <Route
+          path="/review"
+          element={
+            <ProtectedRoute>
+              <Review />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Fallback */}
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

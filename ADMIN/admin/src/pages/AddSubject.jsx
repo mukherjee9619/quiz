@@ -3,57 +3,42 @@ import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import "../styles/addsubject.css";
 
 export default function AddSubject() {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [saving, setSaving] = useState(false);
-
   const navigate = useNavigate();
 
-  const submitForm = async (e) => {
+  const submit = async (e) => {
     e.preventDefault();
 
-    if (!name.trim()) {
-      toast("Subject name is required");
-      return;
-    }
+    if (!name.trim()) return toast.error("Subject name required");
 
     try {
       setSaving(true);
 
-      const res = await fetch("http://127.0.0.1:8081/api/admin/subjects", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: name.trim().toLowerCase(),   // normalize
-          description,
-        }),
-      });
+      const res = await fetch(
+        "http://127.0.0.1:8081/api/admin/subjects",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: name.trim().toLowerCase(),
+            description,
+          }),
+        }
+      );
 
       const data = await res.json();
 
-      // ❌ Duplicate name (from backend 409)
-      if (res.status === 409) {
-        toast("⚠️ This subject already exists!");
-        setSaving(false);
-        return;
-      }
+      if (!res.ok) throw new Error(data.message);
 
-      // ❌ Other errors
-      if (!res.ok) {
-        toast(data.message || "Failed to add subject");
-        setSaving(false);
-        return;
-      }
-
-      // ✅ Success
-      toast("🎉 Subject added successfully");
+      toast.success("Subject added");
       navigate("/subjects");
-
     } catch (err) {
-      console.error(err);
-      toast("Server error. Try again!");
+      toast.error(err.message || "Failed");
     } finally {
       setSaving(false);
     }
@@ -67,47 +52,38 @@ export default function AddSubject() {
         <Topbar title="Add Subject" />
 
         <div className="content">
-          <div className="card-admin">
-
+          <div className="card-admin add-subject-card">
             <h4>Add New Subject</h4>
 
-            <form onSubmit={submitForm} className="mt-3">
+            <form onSubmit={submit}>
+              <label>Subject Name</label>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter subject name"
+              />
 
-              <div className="mb-3">
-                <label className="form-label fw-bold">Subject Name</label>
-                <input
-                  type="text"
-                  className="form-control"
-                  placeholder="Enter subject name"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
+              <label>Description</label>
+              <textarea
+                rows="4"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Optional description"
+              />
+
+              <div className="form-actions">
+                <button className="btn btn-primary" disabled={saving}>
+                  {saving ? "Saving..." : "Submit"}
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => navigate("/subjects")}
+                >
+                  Cancel
+                </button>
               </div>
-
-              <div className="mb-3">
-                <label className="form-label fw-bold">Description</label>
-                <textarea
-                  className="form-control"
-                  rows="3"
-                  placeholder="Enter description (optional)"
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                ></textarea>
-              </div>
-
-              <button className="btn btn-primary" disabled={saving}>
-                {saving ? "Saving..." : "Submit"}
-              </button>
-
-              <button
-                type="button"
-                className="btn btn-secondary ms-2"
-                onClick={() => navigate("/subjects")}
-              >
-                Cancel
-              </button>
-
             </form>
           </div>
         </div>

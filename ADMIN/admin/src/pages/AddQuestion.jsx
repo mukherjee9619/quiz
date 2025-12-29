@@ -3,6 +3,14 @@ import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import { useNavigate } from "react-router-dom";
 
+/* 🔹 Capitalize helper */
+const toTitleCase = (str = "") =>
+  str
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+
 export default function AddQuestion() {
   const [subjects, setSubjects] = useState([]);
   const [subject, setSubject] = useState("");
@@ -12,20 +20,19 @@ export default function AddQuestion() {
 
   const navigate = useNavigate();
 
-  // 🔥 Fetch subjects from backend
+  // 🔥 Fetch subjects
   const loadSubjects = async () => {
     try {
       const res = await fetch("http://127.0.0.1:8081/api/admin/subjects");
       const data = await res.json();
 
-      if (Array.isArray(data)) {
-        setSubjects(data);
+      if (Array.isArray(data.subjects)) {
+        setSubjects(data.subjects);
       }
     } catch (err) {
       console.log("Subjects fetch error:", err);
     }
   };
-
 
   useEffect(() => {
     loadSubjects();
@@ -45,9 +52,11 @@ export default function AddQuestion() {
 
     if (!subject) return alert("Please select subject.");
     if (!q.trim()) return alert("Enter question.");
-    if (options.some((o) => !o.trim())) return alert("All 4 options required.");
+    if (options.some((o) => !o.trim()))
+      return alert("All 4 options required.");
 
-    if (answer < 0 || answer > 3) return alert("Correct answer index must be 0–3.");
+    if (answer < 0 || answer > 3)
+      return alert("Correct answer index must be 0–3.");
 
     const payload = {
       subjectId: subject,
@@ -57,11 +66,14 @@ export default function AddQuestion() {
     };
 
     try {
-      const res = await fetch("http://127.0.0.1:8081/api/admin/questions", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
+      const res = await fetch(
+        "http://127.0.0.1:8081/api/admin/questions",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        }
+      );
 
       const data = await res.json();
 
@@ -99,7 +111,7 @@ export default function AddQuestion() {
                   <option value="">Select Subject</option>
                   {subjects.map((sub) => (
                     <option key={sub._id} value={sub._id}>
-                      {sub.name}
+                      {toTitleCase(sub.displayName || sub.name)}
                     </option>
                   ))}
                 </select>
@@ -131,7 +143,9 @@ export default function AddQuestion() {
 
               {/* Correct Answer */}
               <div className="mb-3">
-                <label className="form-label">Correct Answer Index (0-3)</label>
+                <label className="form-label">
+                  Correct Answer Index (0–3)
+                </label>
                 <input
                   type="number"
                   min="0"

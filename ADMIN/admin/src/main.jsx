@@ -12,6 +12,8 @@ import './styles/tables.css'
 import './styles/modal.css'
 import './styles/theme.css'
 import './styles/dashboard.css'
+import "./styles/subject.css";
+import "./styles/EditQuestion.css";
 import "./styles/addsubject.css";
 import 'bootstrap/dist/css/bootstrap.min.css'
 import { Toaster } from "react-hot-toast";

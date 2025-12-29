@@ -6,24 +6,27 @@ export default function ProtectedRoute({ children }) {
   let user = null;
 
   try {
-    user = JSON.parse(localStorage.getItem("smquiz_user"));
-  } catch (err) {
+    const storedUser = localStorage.getItem("smquiz_user");
+    user = storedUser ? JSON.parse(storedUser) : null;
+  } catch (error) {
+    console.error("Invalid user data in localStorage");
     user = null;
   }
+console.log("ProtectedRoute user:", user);
 
   /* ❌ Not logged in */
   if (!user || !user.email) {
     return (
       <Navigate
         to="/login"
-        state={{ from: location.pathname }}
         replace
+        state={{ from: location.pathname }}
       />
     );
   }
 
-  /* ❌ Admin should NOT access exam routes */
-  if (user.role && user.role === "admin") {
+  /* ❌ Admin should NOT access student/exam routes */
+  if (user.role === "admin") {
     return <Navigate to="/" replace />;
   }
 

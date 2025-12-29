@@ -6,6 +6,11 @@
   flex-direction: column;
   overflow: hidden;
   font-family: Inter, system-ui, sans-serif;
+
+  /* 🔒 Disable text selection */
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
 }
 
 /* HEADER */
@@ -26,10 +31,16 @@
   grid-template-columns: 280px 1fr;
 }
 
+/* PALETTE */
+.palette-wrapper {
+  border-right: 1px solid #1e293b;
+}
+
 /* MAIN */
 .cbt-main {
   padding: 28px;
   overflow-y: auto;
+  padding-bottom: 140px;
 }
 
 .question-text {
@@ -53,47 +64,31 @@
   cursor: pointer;
   text-align: left;
   color: #e5e7eb;
-  transition: all 0.2s ease;
 }
 
-.option:hover {
-  border-color: #38bdf8;
-}
-
-/* ✅ GREEN SELECTED */
 .option.selected {
   background: linear-gradient(90deg, #22c55e, #4ade80);
   color: #000;
   font-weight: 600;
-  border-color: transparent;
-  box-shadow: 0 0 12px rgba(34,197,94,0.5);
 }
 
-.option.selected::after {
-  content: "✔";
-  float: right;
-}
-
-/* ACTIONS */
+/* ACTIONS – DESKTOP */
 .cbt-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid #1e293b;
+
 }
 
 .cbt-actions button {
-  padding: 10px 18px;
+  padding: 12px;
   border-radius: 8px;
   border: none;
   cursor: pointer;
-}
-
-.cbt-actions button:not(.submit-btn):not(.review-btn) {
-  background: #020617;
-  border: 1px solid #1e293b;
-  color: #e5e7eb;
+  font-weight: 600;
 }
 
 .review-btn {
@@ -101,28 +96,132 @@
   color: #fff;
 }
 
-.review-btn.marked {
-  background: linear-gradient(90deg,#7e22ce,#9333ea);
-}
-
 .submit-btn {
   background: linear-gradient(90deg,#ef4444,#f87171);
   color: #fff;
-  font-weight: 600;
 }
-
-/* LOADING */
-.loading {
-  height: 100vh;
+/* ================= INSTRUCTIONS MODAL ================= */
+.instructions-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 6, 23, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  color: #38bdf8;
+  z-index: 999;
 }
 
-/* MOBILE */
+.instructions-card {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 14px;
+  padding: 24px;
+  width: min(92%, 420px);
+  color: #e5e7eb;
+}
+
+.instructions-card h2 {
+  margin-bottom: 14px;
+  text-align: center;
+}
+
+.instructions-card ul {
+  padding-left: 18px;
+  margin-bottom: 16px;
+}
+
+.instructions-card li {
+  margin-bottom: 8px;
+}
+
+.agree {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+.start-btn {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 700;
+  border-radius: 10px;
+  border: none;
+  background: linear-gradient(90deg, #22c55e, #4ade80);
+  cursor: pointer;
+}
+
+.start-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.disabled-btn {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* ========================= */
+/* ✅ MOBILE CBT MODE */
+/* ========================= */
 @media (max-width: 900px) {
-  .cbt-body { grid-template-columns: 1fr; }
-  .cbt-actions { flex-direction: column; gap: 10px; }
+
+  .cbt-header {
+    height: 52px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .cbt-body {
+    grid-template-columns: 1fr;
+  }
+
+  .palette-wrapper {
+    display: none;
+  }
+
+  .cbt-main {
+    padding: 16px;
+    padding-bottom: 180px;
+  }
+
+  .cbt-actions {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background: #020617;
+    border-top: 1px solid #1e293b;
+
+    padding: 12px;
+    margin: 0;
+
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "prev next"
+      "review submit";
+    gap: 10px;
+
+    z-index: 100;
+  }
+
+  .cbt-actions button:nth-child(1) { grid-area: prev; }
+  .cbt-actions button:nth-child(2) { grid-area: review; }
+  .cbt-actions button:nth-child(3) { grid-area: next; }
+  .cbt-actions button:nth-child(4) {
+    grid-area: submit;
+    font-size: 16px;
+    padding: 14px;
+  }
+}
+
+/* 🔒 Mobile long-press block */
+.question-text,
+.options,
+.option {
+  -webkit-touch-callout: none;
 }
