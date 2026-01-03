@@ -1,6 +1,6 @@
-// src/components/QuestionCard.jsx
+
 import React from "react";
-import { formatQuestion } from "../utils/formatQuestion"; // adjust path if needed
+import { formatQuestion } from "../utils/formatQuestion"; 
 
 export default function QuestionCard({ rawQuestion, explanation, answer }) {
   const formatted = formatQuestion(rawQuestion, explanation, answer);

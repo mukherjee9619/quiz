@@ -46,8 +46,9 @@
   border-radius: 8px;
   border: 2px solid #000000;
   font-size: 15px;
-  color: #07382f;
+  color: #7db3a9;
   font-weight: 600;
+  background-color: #130238;
 }
 
 .input-group input:focus {
@@ -57,8 +58,9 @@
 }
 
 ::placeholder {
-  color: #000;
+  color: #e9b7b7;
   font-weight: 400;
+  font-weight: bold;
 }
 
 /* OPTIONS */

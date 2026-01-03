@@ -24,6 +24,7 @@ export default function Quiz() {
   const navigate = useNavigate();
   const submittedRef = useRef(false);
 
+  /* ================= STATE ================= */
   const [questions, setQuestions] = useState([]);
   const [current, setCurrent] = useState(0);
   const [answers, setAnswers] = useState({});
@@ -31,19 +32,17 @@ export default function Quiz() {
   const [visited, setVisited] = useState({});
   const [timeLeft, setTimeLeft] = useState(0);
 
-  const [fullscreenStarted, setFullscreenStarted] = useState(false);
   const [showInstructions, setShowInstructions] = useState(true);
   const [acceptedRules, setAcceptedRules] = useState(false);
+  const [fullscreenStarted, setFullscreenStarted] = useState(false);
   const [warnings, setWarnings] = useState(0);
 
   /* ================= FETCH QUESTIONS ================= */
   useEffect(() => {
-    fetch("http://127.0.0.1:8081/api/admin/questions")
+    fetch(`http://127.0.0.1:8081/api/questions?subjectId=${subjectId}`)
       .then((res) => res.json())
       .then((data) => {
-        const filtered = data.filter((q) => q.subjectId === subjectId);
-
-        const mapped = filtered.map((q) => ({
+        const mapped = data.questions.map((q) => ({
           ...q,
           question: q.title,
           answer: q.correctAnswer,
@@ -51,9 +50,8 @@ export default function Quiz() {
 
         setQuestions(mapped);
 
-        // ⏱ Dynamic time = questions × 0.7 minutes
-        const durationSeconds = Math.ceil(mapped.length * 0.7 * 60);
-        setTimeLeft(durationSeconds);
+        // ⏱ Dynamic time
+        setTimeLeft(Math.ceil(mapped.length * 0.7 * 60));
       })
       .catch(() => toast.error("Failed to load exam"));
   }, [subjectId]);
@@ -71,7 +69,7 @@ export default function Quiz() {
     return () => clearInterval(t);
   }, [timeLeft, fullscreenStarted]);
 
-  /* ================= ANTI TAB SWITCH ================= */
+  /* ================= TAB / BLUR DETECTION ================= */
   useEffect(() => {
     if (!fullscreenStarted) return;
 
@@ -100,7 +98,7 @@ export default function Quiz() {
     };
   }, [fullscreenStarted]);
 
-  /* ================= COPY LOCK ================= */
+  /* ================= COPY / KEY BLOCK ================= */
   useEffect(() => {
     const block = (e) => e.preventDefault();
     const keyBlock = (e) => {
@@ -159,11 +157,7 @@ export default function Quiz() {
     let wrong = 0;
 
     Object.keys(answers).forEach((i) => {
-      if (answers[i] === questions[i].answer) {
-        correct++;
-      } else {
-        wrong++;
-      }
+      answers[i] === questions[i].answer ? correct++ : wrong++;
     });
 
     const score = correct - wrong * NEGATIVE_MARK;
@@ -189,19 +183,20 @@ export default function Quiz() {
     });
   };
 
-  /* ================= INSTRUCTIONS ================= */
+  /* ================= INSTRUCTIONS (ONLY ONCE) ================= */
   if (showInstructions) {
     return (
       <div className="instructions-overlay">
         <div className="instructions-card">
           <h2>Exam Instructions</h2>
+
           <ul>
-            <li>⏱ Total time: {Math.ceil(questions.length * 0.7)} minutes</li>
-            <li>❌ Negative marking: −1/3 for each wrong answer</li>
-            <li>🚫 Do not switch tabs or apps</li>
-            <li>⚠ Maximum {MAX_WARNINGS} warnings allowed</li>
+            <li>⏱ Duration: {Math.ceil(questions.length * 0.7)} minutes</li>
+            <li>❌ Negative marking: −1/3</li>
+            <li>🚫 No tab switching</li>
+            <li>⚠ Max {MAX_WARNINGS} warnings</li>
             <li>📱 Fullscreen mandatory</li>
-            <li>📤 Auto submit on time expiry</li>
+            <li>📤 Auto-submit on timeout</li>
           </ul>
 
           <label className="agree">
@@ -210,12 +205,12 @@ export default function Quiz() {
               checked={acceptedRules}
               onChange={(e) => setAcceptedRules(e.target.checked)}
             />
-            I have read and agree to all instructions
+            I agree to all instructions
           </label>
 
           <button
-            className="start-btn"
             disabled={!acceptedRules}
+            className="start-btn"
             onClick={() => {
               document.documentElement.requestFullscreen?.();
               setShowInstructions(false);
@@ -229,6 +224,7 @@ export default function Quiz() {
     );
   }
 
+  /* ================= EXAM UI ================= */
   const q = questions[current];
   const formatted = formatQuestion(q, current);
 
@@ -252,7 +248,6 @@ export default function Quiz() {
         <main className="cbt-main">
           <p className="question-text">{formatted.questionPart}</p>
 
-          {/* CODE ONLY FOR OUTPUT QUESTIONS */}
           {q?.type === "output" && q?.code?.content && (
             <pre className="code-block">
               <code className={`language-${q.code.language || "javascript"}`}>
@@ -276,7 +271,6 @@ export default function Quiz() {
           <div className="cbt-actions">
             <button
               disabled={current === 0}
-              className={current === 0 ? "disabled-btn" : ""}
               onClick={() => setCurrent((c) => c - 1)}
             >
               Prev
@@ -291,7 +285,6 @@ export default function Quiz() {
 
             <button
               disabled={current === questions.length - 1}
-              className={current === questions.length - 1 ? "disabled-btn" : ""}
               onClick={() => setCurrent((c) => c + 1)}
             >
               Next

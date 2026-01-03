@@ -21,8 +21,8 @@ function hashOTP(otp) {
 }
 // ===== MongoDB connection =====
 
-// const url = "mongodb://127.0.0.1:27017";
-const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
+const url = "mongodb://127.0.0.1:27017";
+// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
@@ -608,52 +608,50 @@ const server = http.createServer(async (req, res) => {
     // GET SINGLE QUESTION
     // ===================================================
     else if (
-  req.method === "GET" &&
-  /^\/api\/admin\/questions\/[a-f\d]{24}(\?.*)?$/.test(req.url)
-) {
-  try {
-    const id = req.url.split("/").pop().split("?")[0];
+      req.method === "GET" &&
+      /^\/api\/admin\/questions\/[a-f\d]{24}(\?.*)?$/.test(req.url)
+    ) {
+      try {
+        const id = req.url.split("/").pop().split("?")[0];
 
-    const question = await db.collection("questions").findOne({
-      _id: new ObjectId(id),
-    });
+        const question = await db.collection("questions").findOne({
+          _id: new ObjectId(id),
+        });
 
-    console.log(question);
-    
+        if (!question) {
+          res.writeHead(404, { "Content-Type": "application/json" });
+          return res.end(JSON.stringify({ message: "Question not found" }));
+        }
 
-    if (!question) {
-      res.writeHead(404, { "Content-Type": "application/json" });
-      return res.end(JSON.stringify({ message: "Question not found" }));
+        const subject = await db.collection("subjects").findOne({
+          _id: new ObjectId(question.subjectId),
+        });
+
+        res.writeHead(200, {
+          "Content-Type": "application/json",
+          "Cache-Control":
+            "no-store, no-cache, must-revalidate, proxy-revalidate",
+          Pragma: "no-cache",
+          Expires: "0",
+          "Surrogate-Control": "no-store",
+        });
+
+        return res.end(
+          JSON.stringify({
+            _id: question._id.toString(),
+            subjectId: question.subjectId.toString(),
+            question: question.title,
+            options: question.options,
+            correctAnswer: question.correctAnswer,
+            subjectName: subject?.displayName || subject?.name || "Unknown",
+          })
+        );
+      } catch (err) {
+        console.error(err);
+        res.writeHead(400, { "Content-Type": "application/json" });
+        return res.end(JSON.stringify({ message: "Invalid Question ID" }));
+      }
     }
-
-    const subject = await db.collection("subjects").findOne({
-      _id: new ObjectId(question.subjectId),
-    });
-
-    res.writeHead(200, {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store, no-cache, must-revalidate, proxy-revalidate",
-      "Pragma": "no-cache",
-      "Expires": "0",
-      "Surrogate-Control": "no-store",
-    });
-
-    return res.end(
-      JSON.stringify({
-        _id: question._id.toString(),
-        subjectId: question.subjectId.toString(),
-        question: question.question,
-        options: question.options,
-        correctAnswer: question.correctAnswer,
-        subjectName: subject?.displayName || subject?.name || "Unknown",
-      })
-    );
-  } catch (err) {
-    console.error(err);
-    res.writeHead(400, { "Content-Type": "application/json" });
-    return res.end(JSON.stringify({ message: "Invalid Question ID" }));
-  }
-}
 
     // ===================================================
     // GET QUESTIONS (Pagination + Search + Subject Filter)
@@ -717,6 +715,52 @@ const server = http.createServer(async (req, res) => {
           totalPages:
             limitParam === "all" ? 1 : Math.ceil(total / parseInt(limitParam)),
           currentPage: page,
+        })
+      );
+    }
+    //FRONTEND ALL QUESTIONS API //
+    else if (req.method === "GET" && req.url.startsWith("/api/questions")) {
+      const urlObj = new URL(req.url, `http://${req.headers.host}`);
+
+      const search = urlObj.searchParams.get("search") || "";
+      const subjectId = urlObj.searchParams.get("subjectId");
+
+      const query = {};
+
+      // 🔍 Search by title
+      if (search) {
+        query.title = { $regex: search, $options: "i" };
+      }
+
+      // 🎯 Filter by subject
+      if (subjectId && subjectId !== "all") {
+        query.subjectId = subjectId;
+      }
+
+      // 📘 Load subjects
+      const subjects = await db.collection("subjects").find({}).toArray();
+      const subjectMap = {};
+      subjects.forEach(
+        (s) => (subjectMap[s._id.toString()] = s.displayName || s.name)
+      );
+
+      // ❌ NO PAGINATION
+      const questions = await db
+        .collection("questions")
+        .find(query)
+        .sort({ createdAt: -1 })
+        .toArray();
+
+      const final = questions.map((q) => ({
+        ...q,
+        subjectName: subjectMap[q.subjectId] || "Unknown",
+      }));
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(
+        JSON.stringify({
+          questions: final,
+          total: final.length,
         })
       );
     }

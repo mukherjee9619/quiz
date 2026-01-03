@@ -1,9 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
 import "../styles/dashboard.css";
+import { getAdminActivity } from "../services/activityApi";
 
 export default function Dashboard() {
+  const navigate = useNavigate();
+
+  /* ================= STATE ================= */
   const [stats, setStats] = useState({
     subjects: 0,
     questions: 0,
@@ -11,27 +16,40 @@ export default function Dashboard() {
     results: 0,
   });
 
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ⭐ Updated greeting logic
+  const prevStats = useRef(stats);
+
+  /* ================= AUTH CHECK ================= */
+  useEffect(() => {
+    const token = localStorage.getItem("admin_token");
+    const expiry = localStorage.getItem("admin_token_expiry");
+
+    if (!token || !expiry || Date.now() > Number(expiry)) {
+      localStorage.clear();
+      navigate("/login", { replace: true });
+    }
+  }, [navigate]);
+
+  /* ================= GREETING ================= */
   const getGreeting = () => {
     const hour = new Date().getHours();
-
     if (hour >= 5 && hour < 12) return "Good Morning ☀️";
     if (hour >= 12 && hour < 16) return "Good Afternoon 🌤️";
     if (hour >= 16 && hour < 21) return "Good Evening 🌙";
-
-    // Night time
-    if ((hour >= 21 && hour <= 24) || (hour >= 0 && hour < 5))
-      return "Good Night 🌙";
-
-    return "Hello 👋";
+    return "Good Night 🌙";
   };
 
-  // ⭐ Fetch LIVE stats from backend
+  /* ================= LOAD STATS ================= */
   const loadStats = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:8081/api/admin/stats");
+      const token = localStorage.getItem("admin_token");
+
+      const res = await fetch("http://127.0.0.1:8081/api/admin/stats", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
       const data = await res.json();
 
       setStats({
@@ -40,25 +58,60 @@ export default function Dashboard() {
         users: data.users ?? 0,
         results: data.results ?? 0,
       });
-    } catch (err) {
-      console.log("Stats error:", err);
 
-      // fallback values
-      setStats({
-        subjects: 12,
-        questions: 250,
-        users: 87,
-        results: 340,
-      });
+      /* 🔁 Fallback activity from stat changes */
+      const fallback = [];
+
+      if (data.questions > prevStats.current.questions) {
+        fallback.push({
+          _id: "q",
+          message: `${data.questions - prevStats.current.questions} questions added`,
+          createdAt: new Date(),
+        });
+      }
+
+      if (data.subjects > prevStats.current.subjects) {
+        fallback.push({
+          _id: "s",
+          message: `${data.subjects - prevStats.current.subjects} subjects added`,
+          createdAt: new Date(),
+        });
+      }
+
+      if (fallback.length && activities.length === 0) {
+        setActivities(fallback);
+      }
+
+      prevStats.current = data;
+    } catch (err) {
+      console.error("Stats error:", err);
     } finally {
       setLoading(false);
     }
   };
 
+  /* ================= LOAD ACTIVITY ================= */
+  const loadActivity = async () => {
+    try {
+      const data = await getAdminActivity();
+      if (Array.isArray(data) && data.length > 0) {
+        setActivities(data);
+      }
+    } catch (err) {
+      console.error("Activity error:", err);
+    }
+  };
+
+  /* ================= INIT + AUTO REFRESH ================= */
   useEffect(() => {
     loadStats();
+    loadActivity();
+
+    const interval = setInterval(loadActivity, 30000); // every 30s
+    return () => clearInterval(interval);
   }, []);
 
+  /* ================= UI ================= */
   return (
     <div className="layout">
       <Sidebar />
@@ -67,60 +120,43 @@ export default function Dashboard() {
         <Topbar title="Dashboard" />
 
         <div className="content dashboard-content">
-
-          {/* Greeting Section */}
           <div className="welcome-box">
-            <h2>{getGreeting()}, Admin! 👋</h2>
+            <h2>{getGreeting()}, Admin 👋</h2>
             <p>Here is the summary of your quiz system.</p>
           </div>
 
-          {/* Widget Boxes */}
+          {/* Stats */}
           <div className="cards-grid">
-            <div className="widget card-admin pop">
-              <div className="w-title">Subjects</div>
-              <div className="w-value">{loading ? "..." : stats.subjects}</div>
-            </div>
-
-            <div className="widget card-admin pop">
-              <div className="w-title">Questions</div>
-              <div className="w-value">{loading ? "..." : stats.questions}</div>
-            </div>
-
-            <div className="widget card-admin pop">
-              <div className="w-title">Users</div>
-              <div className="w-value">{loading ? "..." : stats.users}</div>
-            </div>
-
-            <div className="widget card-admin pop">
-              <div className="w-title">Results</div>
-              <div className="w-value">{loading ? "..." : stats.results}</div>
-            </div>
+            {["Subjects", "Questions", "Users", "Results"].map((t, i) => (
+              <div key={t} className="widget card-admin pop">
+                <div className="w-title">{t}</div>
+                <div className="w-value">
+                  {loading ? "..." : Object.values(stats)[i]}
+                </div>
+              </div>
+            ))}
           </div>
 
-          {/* Activity */}
+          {/* Recent Activity */}
           <div className="card-admin mt-3 fade-in">
             <h4 className="activity-title">Recent Activity</h4>
 
             <div className="timeline">
-              <div className="timeline-item">
-                <span className="dot"></span>
-                <p>New subject added — <strong>JavaScript</strong></p>
-              </div>
-              <div className="timeline-item">
-                <span className="dot"></span>
-                <p>User <strong>Rohit Kumar</strong> completed a quiz</p>
-              </div>
-              <div className="timeline-item">
-                <span className="dot"></span>
-                <p>5 new questions added to <strong>HTML</strong></p>
-              </div>
-              <div className="timeline-item">
-                <span className="dot"></span>
-                <p>System generated daily report</p>
-              </div>
+              {activities.length === 0 && (
+                <p className="muted">No recent activity</p>
+              )}
+
+              {activities.map((item, i) => (
+                <div className="timeline-item" key={i}>
+                  <span className="dot"></span>
+                  <p>{item.message}</p>
+                  <small className="time">
+                    {new Date(item.createdAt).toLocaleString()}
+                  </small>
+                </div>
+              ))}
             </div>
           </div>
-
         </div>
       </main>
     </div>

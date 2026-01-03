@@ -1,17 +1,142 @@
-.navbar-brand {
-  font-size: 1.25rem;
-  letter-spacing: 0.4px;
+
+.quiz-header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+  background: linear-gradient(
+    135deg,
+    #0f172a,
+    #1e3a8a,
+    #2563eb
+  );
+
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
-.nav-link {
-  transition: color 0.2s ease, background 0.2s ease;
-  border-radius: 6px;
+.quiz-header::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.25),
+    rgba(255, 255, 255, 0)
+  );
+  pointer-events: none;
 }
 
-.nav-link:hover {
-  background: rgba(255, 255, 255, 0.12);
+/* CONTAINER */
+.header-container {
+  max-width: 1250px;
+  margin: auto;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 22px;
 }
 
-.nav-link.active {
-  background: rgba(255, 255, 255, 0.18);
+/* LOGO */
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: #ffffff;
+}
+
+.logo-img {
+  height: 36px;
+}
+
+.logo-text {
+  font-size: 1.4rem;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+/* RIGHT SIDE */
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  
+}
+
+/* EMAIL BADGE (ONLY FOCUS) */
+.user-email {
+  max-width: 240px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  padding: 7px 18px;
+  border-radius: 999px;
+
+  background: rgb(2, 59, 61);
+  backdrop-filter: blur(8px);
+
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+  transition: all 0.25s ease;
+  cursor: default;
+  pointer-events: none;
+}
+
+.user-email:hover {
+  background: rgba(255, 255, 255, 0.38);
+  transform: translateY(-1px);
+}
+
+/* BUTTONS */
+.login-btn,
+.logout-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.25s ease;
+}
+
+.login-btn {
+  background: #ffffff;
+  color: #1f2937;
+}
+
+.login-btn:hover {
+  background: #f1f5f9;
+  transform: translateY(-1px);
+}
+
+.logout-btn {
+  background: #ef4444;
+  color: #ffffff;
+}
+
+.logout-btn:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+/* MOBILE */
+@media (max-width: 768px) {
+  .header-container {
+    padding: 12px 16px;
+  }
+
+  .logo-text {
+    font-size: 1.15rem;
+  }
+
+  .user-email {
+    max-width: 160px;
+  }
 }

@@ -39,7 +39,7 @@ font-size: 1.5rem;
 form input {
 width: 100%;
 padding: 14px;
-margin-bottom: 18px;
+/* margin-bottom: 18px; */
 border-radius: 12px;
 background: rgba(255,255,255,0.25);
 border: none;

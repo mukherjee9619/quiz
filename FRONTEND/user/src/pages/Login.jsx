@@ -1,11 +1,11 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
-import { loginUser } from "../services/authApi";
-import "../styles/Login.css"; // Use the same CSS
+import "../styles/Login.css";
 
 export default function Login() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -13,24 +13,63 @@ export default function Login() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
+  // 🔁 Redirect already logged-in users
+  useEffect(() => {
+    const token =
+      localStorage.getItem("user_token") ||
+      sessionStorage.getItem("user_token");
+
+    if (token) {
+      navigate("/", { replace: true });
+    }
+  }, [navigate]);
+
+  // 💾 Remember email
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("remember_email");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRemember(true);
+    }
+  }, []);
+
   const submit = async (e) => {
     e.preventDefault();
     setError("");
 
     try {
-      const response = await loginUser({ email, password });
+      const res = await fetch("http://127.0.0.1:8081/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-      if (response.status === 200) {
-        const storage = remember ? localStorage : sessionStorage;
-        storage.setItem("user_token", response.data.token);
+      const data = await res.json();
 
-        toast.success(`Welcome back ${response.data.user.name}`);
-        navigate("/dashboard");
-      } else {
-        setError("Invalid email or password");
+      if (!res.ok) {
+        setError(data.message || "Invalid email or password");
+        return;
       }
-    } catch {
-      setError("Login failed");
+
+      const storage = remember ? localStorage : sessionStorage;
+
+      storage.setItem("user_token", data.token);
+      storage.setItem("user_role", data.user.role);
+      storage.setItem("user_email", email);
+      if (remember) {
+        localStorage.setItem("remember_email", email);
+      } else {
+        localStorage.removeItem("remember_email");
+      }
+
+      toast.success(`Welcome back ${data.user.name}`);
+
+      // ✅ Redirect to previous protected route
+      const redirectTo = location.state?.from || "/";
+      navigate(redirectTo, { replace: true });
+
+    } catch (err) {
+      setError("Login failed. Please try again.");
     }
   };
 
@@ -38,7 +77,6 @@ export default function Login() {
     <div className="login-wrapper">
       <div className="login-card">
         <h2 className="login-title">Login</h2>
-        {/* <p className="login-subtitle">Sign in to continue</p> */}
 
         <form onSubmit={submit}>
           {/* EMAIL */}

@@ -1,56 +1,55 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "../styles/Header.css";
+import { logout } from "../utils/auth";
 
 export default function Header() {
+  const navigate = useNavigate();
+
+  // 🔐 Auth check (Remember Me supported)
+  const token =
+    localStorage.getItem("user_token") ||
+    sessionStorage.getItem("user_token");
+
+  const email =
+    localStorage.getItem("user_email") ||
+    sessionStorage.getItem("user_email");
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm sticky-top">
-      <div className="container">
-        {/* Brand */}
-        <NavLink className="navbar-brand fw-bold d-flex align-items-center" to="/">
-          <span className="me-2">🧠</span>
-          Quiz App
+    <header className="quiz-header">
+      <div className="header-container">
+        {/* LOGO */}
+        <NavLink to="/" className="logo">
+          <img src="/logo.png" alt="SM Quiz App" className="logo-img" />
+          <span className="logo-text">QUIZ APP</span>
         </NavLink>
 
-        {/* Mobile Toggle */}
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#navbarNav"
-          aria-controls="navbarNav"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        {/* RIGHT ACTIONS */}
+        <div className="nav-links">
+          {token && (
+            <div
+              className="user-email"
+              title={email}
+              onClick={() => navigate("/profile")}
+            >
+              {email}
+            </div>
+          )}
 
-        {/* Menu */}
-        <div className="collapse navbar-collapse" id="navbarNav">
-          <ul className="navbar-nav ms-auto align-items-lg-center gap-lg-2">
-            <li className="nav-item">
-              <NavLink
-                to="/"
-                end
-                className={({ isActive }) =>
-                  `nav-link px-3 ${isActive ? "active fw-semibold" : ""}`
-                }
-              >
-                Home
-              </NavLink>
-            </li>
-
-            {/* 🔒 Ready for future expansion */}
-            {/* 
-            <li className="nav-item">
-              <NavLink to="/subjects" className="nav-link px-3">
-                Subjects
-              </NavLink>
-            </li>
-            */}
-          </ul>
+          {token ? (
+            <button onClick={logout} className="logout-btn">
+              Logout
+            </button>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="login-btn"
+            >
+              Login
+            </button>
+          )}
         </div>
       </div>
-    </nav>
+    </header>
   );
 }

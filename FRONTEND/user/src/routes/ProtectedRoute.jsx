@@ -3,19 +3,15 @@ import { Navigate, useLocation } from "react-router-dom";
 export default function ProtectedRoute({ children }) {
   const location = useLocation();
 
-  let user = null;
+  // ✅ Support Remember Me (local + session)
+  const token =
+    localStorage.getItem("user_token") ||
+    sessionStorage.getItem("user_token");
 
-  try {
-    const storedUser = localStorage.getItem("smquiz_user");
-    user = storedUser ? JSON.parse(storedUser) : null;
-  } catch (error) {
-    console.error("Invalid user data in localStorage");
-    user = null;
-  }
-console.log("ProtectedRoute user:", user);
+  console.log("ProtectedRoute token:", token);
 
-  /* ❌ Not logged in */
-  if (!user || !user.email) {
+  // ❌ Not logged in
+  if (!token) {
     return (
       <Navigate
         to="/login"
@@ -25,11 +21,6 @@ console.log("ProtectedRoute user:", user);
     );
   }
 
-  /* ❌ Admin should NOT access student/exam routes */
-  if (user.role === "admin") {
-    return <Navigate to="/" replace />;
-  }
-
-  /* ✅ Student allowed */
+  // ✅ Logged-in user can access quiz pages
   return children;
 }

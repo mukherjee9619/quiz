@@ -5,10 +5,7 @@ import "../styles/Home.css";
 
 export default function SubjectCard({ subject }) {
   return (
-    <Link
-      to={`/start/${subject._id}`}
-      className="subject-card"
-    >
+    <Link to={`/quiz/${subject._id}`} className="subject-card">
       <div className="subject-icon">
         <FaBookOpen />
       </div>

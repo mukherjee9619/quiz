@@ -4,7 +4,6 @@ import { Toaster } from "react-hot-toast";
 
 // User Pages
 import Home from "./pages/Home";
-import StartQuiz from "./pages/StartQuiz";
 import Quiz from "./pages/Quiz";
 import Result from "./pages/Result";
 import Login from "./pages/Login";
@@ -32,22 +31,12 @@ export default function App() {
 
       {/* Routes */}
       <Routes>
-        {/* Public Pages */}
+        {/* Public */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* 🔒 Start Quiz (PROTECTED) */}
-        <Route
-          path="/start/:subjectId"
-          element={
-            <ProtectedRoute>
-              <StartQuiz />
-            </ProtectedRoute>
-          }
-        />
-
-        {/* 🔒 Exam Page */}
+        {/* 🔒 QUIZ (Instructions + Exam in ONE FILE) */}
         <Route
           path="/quiz/:subjectId"
           element={
@@ -57,7 +46,7 @@ export default function App() {
           }
         />
 
-        {/* 🔒 Result Page */}
+        {/* 🔒 Result */}
         <Route
           path="/result"
           element={
@@ -67,7 +56,7 @@ export default function App() {
           }
         />
 
-        {/* 🔒 Review Page */}
+        {/* 🔒 Review */}
         <Route
           path="/review"
           element={

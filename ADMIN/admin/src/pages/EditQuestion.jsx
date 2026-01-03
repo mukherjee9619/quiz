@@ -18,7 +18,7 @@ export default function EditQuestion() {
 
   /* ================= LOAD QUESTION BY ID ================= */
   useEffect(() => {
-    console.log("useEffect triggered, id =", id);
+    // console.log("useEffect triggered, id =", id);
 
     const fetchQuestion = async () => {
       console.log("fetchQuestion called");
@@ -31,14 +31,14 @@ export default function EditQuestion() {
         });
 
 
-        console.log("response status", res.status);
+        // console.log("response status", res.status);
 
         const data = await res.json();
         console.log("API DATA:", data);
 
         if (!res.ok) throw new Error(data.message);
 
-        setSubjectId(data.subjectId);
+        setSubjectId(data.subjectName);
         setQuestion(data.question);
         setOptions(data.options);
         setCorrectAnswer(String(data.correctAnswer));
@@ -102,7 +102,7 @@ export default function EditQuestion() {
             <h2>Edit Question</h2>
 
             <form onSubmit={handleSubmit}>
-              <label>Subject ID</label>
+              <label>Subject Name</label>
               <input value={subjectId} disabled />
 
               <label>Question</label>

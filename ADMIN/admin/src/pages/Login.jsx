@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { loginUser } from "../services/authApi";
 import "../styles/login.css";
+
+const TOKEN_EXPIRY_TIME = 60 * 60 * 1000; // ⏳ 1 hour
 
 export default function Login() {
   const navigate = useNavigate();
@@ -10,35 +12,55 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
 
- const submit = async (e) => {
-  e.preventDefault();
-  setError("");
+  /* 🔁 Load remembered email + password on mount */
+  useEffect(() => {
+    const remembered = localStorage.getItem("admin_remember") === "true";
 
-  try {
-    const response = await loginUser({ email, password });
-
-    if (response.status === 200) {
-      const storage = remember ? localStorage : sessionStorage;
-      storage.setItem("admin_token", response.data.token);
-
-      toast.success("Welcome back Admin");
-      navigate("/dashboard");
-    } else {
-      setError("Invalid email or password");
+    if (remembered) {
+      setEmail(localStorage.getItem("admin_email") || "");
+      setPassword(localStorage.getItem("admin_password") || "");
+      setRemember(true);
     }
-  } catch {
-    setError("Login failed");
-  }
-};
+  }, []);
 
+  const submit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    try {
+      const response = await loginUser({ email, password });
+
+      if (response.status === 200) {
+        const expiry = Date.now() + TOKEN_EXPIRY_TIME;
+
+        /* 🔐 Save token + expiry */
+        localStorage.setItem("admin_token", response.data.token);
+        localStorage.setItem("admin_token_expiry", expiry);
+
+        /* 💾 Remember credentials ONLY if checked */
+        if (remember) {
+          localStorage.setItem("admin_email", email);
+          localStorage.setItem("admin_password", password);
+          localStorage.setItem("admin_remember", "true");
+        }
+
+        toast.success("Welcome back Admin 🚀");
+        navigate("/dashboard");
+      } else {
+        setError("Invalid email or password");
+      }
+    } catch {
+      setError("Login failed. Please try again.");
+    }
+  };
 
   return (
     <div className="login-wrapper">
       <div className="login-card">
         <h2 className="login-title">Admin Login</h2>
-        {/* <p className="login-subtitle">Sign in to continue</p> */}
 
         <form onSubmit={submit}>
           {/* EMAIL */}
@@ -56,13 +78,21 @@ export default function Login() {
           {/* PASSWORD */}
           <div className="input-group">
             <label>Password</label>
-            <input
-              type="password"
-              placeholder="Enter your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className="password-box">
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <span
+                className="toggle-password"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "🙈" : "👁️"}
+              </span>
+            </div>
           </div>
 
           {/* OPTIONS */}
@@ -71,9 +101,19 @@ export default function Login() {
               <input
                 type="checkbox"
                 checked={remember}
-                onChange={(e) => setRemember(e.target.checked)}
+                onChange={(e) => {
+                  const checked = e.target.checked;
+                  setRemember(checked);
+
+                  /* ❌ Remove ONLY when user unchecks */
+                  if (!checked) {
+                    localStorage.removeItem("admin_email");
+                    localStorage.removeItem("admin_password");
+                    localStorage.removeItem("admin_remember");
+                  }
+                }}
               />
-              <span>Remember me</span>
+              <span>Remember email & password</span>
             </label>
 
             <span
@@ -90,11 +130,6 @@ export default function Login() {
           <button type="submit" className="login-btn">
             Login →
           </button>
-
-          <div className="register">
-            Don’t have an account?
-            <span onClick={() => navigate("/register")}> Register</span>
-          </div>
         </form>
       </div>
     </div>
