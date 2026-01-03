@@ -7,6 +7,9 @@ const crypto = require("crypto");
 const { sendOTPEmail } = require("./middleware/mailer");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
+const logActivity = require("./utils/activityLogger");
+const ACTIVITY = require("./utils/activityTypes");
+
 
 // ================= CONFIG =================
 const OTP_EXPIRY_SECONDS = 50 * 1000;
@@ -21,8 +24,8 @@ function hashOTP(otp) {
 }
 // ===== MongoDB connection =====
 
-const url = "mongodb://127.0.0.1:27017";
-// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
+// const url = "mongodb://127.0.0.1:27017";
+const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 
@@ -69,21 +72,33 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(409, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "User already exists" }));
       }
+
       const hashedPassword = await bcrypt.hash(data.password, 10);
 
-      await users.insertOne({
+      const result = await users.insertOne({
         fullname: data.fullname,
         email: data.email,
-        password: hashedPassword, // ✅ hashed
+        password: hashedPassword,
         role: "Admin",
         createdAt: new Date(),
+      });
+
+      // 🔔 ACTIVITY LOG
+      logActivity(db, {
+        actorType: "ADMIN",
+        actorId: result.insertedId,
+        action: ACTIVITY.ADMIN.REGISTERED,
+        entityType: "ADMIN",
+        entityId: result.insertedId,
+        message: "New admin registered",
+        metadata: { email: data.email }
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
       return res.end(JSON.stringify({ message: "Admin registered" }));
     }
 
-    // ================= FRONTEND REGISTER =================
+    // ================= USER REGISTER =================
     else if (req.method === "POST" && req.url === "/api/register") {
       const data = await parseBody();
       const users = db.collection("users");
@@ -92,14 +107,26 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(409, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "User already exists" }));
       }
+
       const hashedPassword = await bcrypt.hash(data.password, 10);
 
-      await users.insertOne({
+      const result = await users.insertOne({
         fullname: data.name,
         email: data.email,
         password: hashedPassword,
         role: "user",
         createdAt: new Date(),
+      });
+
+      // 🔔 ACTIVITY LOG
+      logActivity(db, {
+        actorType: "USER",
+        actorId: result.insertedId,
+        action: ACTIVITY.USER.REGISTERED,
+        entityType: "USER",
+        entityId: result.insertedId,
+        message: "New user registered",
+        metadata: { email: data.email }
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
@@ -123,12 +150,22 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "Invalid credentials" }));
       }
 
-      // ✅ Generate JWT
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
+
+      // 🔔 ACTIVITY LOG
+      logActivity(db, {
+        actorType: "ADMIN",
+        actorId: user._id,
+        action: ACTIVITY.ADMIN.LOGIN,
+        entityType: "ADMIN",
+        entityId: user._id,
+        message: "Admin logged in",
+        metadata: { email: user.email }
+      });
 
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(
@@ -276,7 +313,6 @@ const server = http.createServer(async (req, res) => {
     else if (req.method === "POST" && req.url === "/api/login") {
       const { email, password } = await parseBody();
 
-      // Find user by email
       const user = await db.collection("users").findOne({ email });
 
       if (!user) {
@@ -284,7 +320,6 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "Invalid credentials" }));
       }
 
-      // Compare the password with hashed password
       const isMatch = await bcrypt.compare(password, user.password);
 
       if (!isMatch) {
@@ -292,12 +327,24 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "Invalid credentials" }));
       }
 
-      // Optional: generate JWT for frontend users (if needed)
       const token = jwt.sign(
         { id: user._id, role: user.role },
         process.env.JWT_SECRET,
         { expiresIn: "1d" }
       );
+
+      // 🔔 ACTIVITY LOG
+      logActivity(db, {
+        actorType: "USER",
+        actorId: user._id,
+        action: ACTIVITY.USER.LOGIN,
+        entityType: "USER",
+        entityId: user._id,
+        message: "User logged in",
+        metadata: {
+          email: user.email,
+        },
+      });
 
       res.writeHead(200, { "Content-Type": "application/json" });
       return res.end(
@@ -307,13 +354,17 @@ const server = http.createServer(async (req, res) => {
             id: user._id,
             name: user.fullname,
             email: user.email,
-            role: user.role, // student
+            role: user.role,
           },
           token,
         })
       );
     }
 
+
+    // ===================================================
+    // ADD SUBJECT
+    // ===================================================
     // ===================================================
     // ADD SUBJECT
     // ===================================================
@@ -338,6 +389,19 @@ const server = http.createServer(async (req, res) => {
         createdAt: new Date(),
       });
 
+      // 🔔 ACTIVITY LOG
+      logActivity(db, {
+        actorType: "ADMIN",
+        action: ACTIVITY.SUBJECT.CREATED,
+        entityType: "SUBJECT",
+        entityId: result.insertedId,
+        message: `Subject "${data.name}" created`,
+        metadata: {
+          subjectId: result.insertedId,
+          name: data.name,
+        },
+      });
+
       res.writeHead(201, { "Content-Type": "application/json" });
       return res.end(
         JSON.stringify({
@@ -347,6 +411,9 @@ const server = http.createServer(async (req, res) => {
       );
     }
 
+    // ===================================================
+    // EDIT SUBJECT
+    // ===================================================
     // ===================================================
     // EDIT SUBJECT
     // ===================================================
@@ -379,6 +446,19 @@ const server = http.createServer(async (req, res) => {
           return res.end(JSON.stringify({ message: "Subject not found" }));
         }
 
+        // 🔔 ACTIVITY LOG
+        logActivity(db, {
+          actorType: "ADMIN",
+          action: ACTIVITY.SUBJECT.UPDATED,
+          entityType: "SUBJECT",
+          entityId: new ObjectId(id),
+          message: `Subject updated: ${data.name}`,
+          metadata: {
+            subjectId: id,
+            name: data.name,
+          },
+        });
+
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify({ message: "Subject updated" }));
       } catch (err) {
@@ -386,6 +466,7 @@ const server = http.createServer(async (req, res) => {
         res.end(JSON.stringify({ message: "Invalid subject ID" }));
       }
     }
+
     // ===================================================
     // GET SINGLE SUBJECT
     // ===================================================
@@ -479,16 +560,33 @@ const server = http.createServer(async (req, res) => {
       const id = req.url.split("/")[4];
 
       try {
-        const result = await db
+        const subject = await db
           .collection("subjects")
-          .deleteOne({ _id: new ObjectId(id) });
+          .findOne({ _id: new ObjectId(id) });
 
-        if (result.deletedCount === 0) {
+        if (!subject) {
           res.writeHead(404, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
         }
 
-        await db.collection("questions").deleteMany({ subjectId: id });
+        await db.collection("subjects").deleteOne({ _id: new ObjectId(id) });
+
+        const qResult = await db
+          .collection("questions")
+          .deleteMany({ subjectId: id });
+
+        // 🔔 ACTIVITY LOG
+        logActivity(db, {
+          actorType: "ADMIN",
+          action: ACTIVITY.SUBJECT.DELETED,
+          entityType: "SUBJECT",
+          entityId: new ObjectId(id),
+          message: `Subject deleted: ${subject.name}`,
+          metadata: {
+            subjectId: id,
+            deletedQuestions: qResult.deletedCount,
+          },
+        });
 
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "🗑️ Subject deleted!" }));
@@ -508,7 +606,6 @@ const server = http.createServer(async (req, res) => {
       const subjectId = req.url.split("/")[5];
 
       try {
-        // 1️⃣ Validate subject exists
         const subject = await db
           .collection("subjects")
           .findOne({ _id: new ObjectId(subjectId) });
@@ -518,25 +615,36 @@ const server = http.createServer(async (req, res) => {
           return res.end(JSON.stringify({ message: "❌ Subject not found!" }));
         }
 
-        // 2️⃣ Delete all questions of subject
         const qResult = await db
           .collection("questions")
           .deleteMany({ subjectId });
 
-        // 3️⃣ Delete subject itself
         await db
           .collection("subjects")
           .deleteOne({ _id: new ObjectId(subjectId) });
 
+        // 🔔 ACTIVITY LOG
+        logActivity(db, {
+          actorType: "ADMIN",
+          action: ACTIVITY.SUBJECT.DELETED,
+          entityType: "SUBJECT",
+          entityId: new ObjectId(subjectId),
+          message: `Subject & all questions deleted: ${subject.name}`,
+          metadata: {
+            subjectId,
+            deletedQuestions: qResult.deletedCount,
+          },
+        });
+
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(
           JSON.stringify({
-            message: `🗑️Subject & all questions deleted successfully`,
+            message: `🗑️ Subject & all questions deleted successfully`,
             subject: subject.name,
             deletedQuestions: qResult.deletedCount,
           })
         );
-      } catch (err) {
+      } catch {
         res.writeHead(400, { "Content-Type": "application/json" });
         return res.end(
           JSON.stringify({ message: "⚠️ Invalid subject ID format" })
@@ -556,6 +664,19 @@ const server = http.createServer(async (req, res) => {
         options: data.options,
         correctAnswer: data.correctAnswer,
         createdAt: new Date(),
+      });
+
+      // 🔔 ACTIVITY LOG
+      logActivity(db, {
+        actorType: "ADMIN",
+        action: ACTIVITY.QUESTION.ADDED,
+        entityType: "QUESTION",
+        entityId: result.insertedId,
+        message: "New question added",
+        metadata: {
+          subjectId: data.subjectId,
+          questionId: result.insertedId,
+        },
       });
 
       res.writeHead(201, { "Content-Type": "application/json" });
@@ -596,6 +717,19 @@ const server = http.createServer(async (req, res) => {
           return res.end(JSON.stringify({ message: "Question not found" }));
         }
 
+        // 🔔 ACTIVITY LOG
+        logActivity(db, {
+          actorType: "ADMIN",
+          action: ACTIVITY.QUESTION.UPDATED,
+          entityType: "QUESTION",
+          entityId: new ObjectId(id),
+          message: "Question updated",
+          metadata: {
+            questionId: id,
+            subjectId: data.subjectId,
+          },
+        });
+
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "Question updated" }));
       } catch {
@@ -603,6 +737,7 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "Update failed" }));
       }
     }
+
 
     // ===================================================
     // GET SINGLE QUESTION
@@ -776,22 +911,36 @@ const server = http.createServer(async (req, res) => {
       try {
         const id = req.url.split("/")[4];
 
-        // Validate ObjectId
         if (!ObjectId.isValid(id)) {
           res.writeHead(400, { "Content-Type": "application/json" });
-          return res.end(
-            JSON.stringify({ message: "⚠️ Invalid question ID!" })
-          );
+          return res.end(JSON.stringify({ message: "⚠️ Invalid question ID!" }));
         }
 
-        const result = await db
+        const question = await db
           .collection("questions")
-          .deleteOne({ _id: new ObjectId(id) });
+          .findOne({ _id: new ObjectId(id) });
 
-        if (result.deletedCount === 0) {
+        if (!question) {
           res.writeHead(404, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ message: "❌ Question not found!" }));
         }
+
+        await db
+          .collection("questions")
+          .deleteOne({ _id: new ObjectId(id) });
+
+        // 🔔 ACTIVITY LOG
+        logActivity(db, {
+          actorType: "ADMIN",
+          action: ACTIVITY.QUESTION.DELETED,
+          entityType: "QUESTION",
+          entityId: new ObjectId(id),
+          message: "Question deleted",
+          metadata: {
+            questionId: id,
+            subjectId: question.subjectId,
+          },
+        });
 
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(
@@ -804,7 +953,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // ===================================================
-    // DELETE QUESTION ALL
+    // DELETE QUESTION ALL (fallback)
     // ===================================================
     else if (
       req.method === "DELETE" &&
@@ -813,14 +962,31 @@ const server = http.createServer(async (req, res) => {
       const id = req.url.split("/")[3];
 
       try {
-        const result = await db
+        const question = await db
           .collection("questions")
-          .deleteOne({ _id: new ObjectId(id) });
+          .findOne({ _id: new ObjectId(id) });
 
-        if (result.deletedCount === 0) {
+        if (!question) {
           res.writeHead(404, { "Content-Type": "application/json" });
           return res.end(JSON.stringify({ message: "❌ Question not found!" }));
         }
+
+        await db
+          .collection("questions")
+          .deleteOne({ _id: new ObjectId(id) });
+
+        // 🔔 ACTIVITY LOG
+        logActivity(db, {
+          actorType: "ADMIN",
+          action: ACTIVITY.QUESTION.DELETED,
+          entityType: "QUESTION",
+          entityId: new ObjectId(id),
+          message: "Question deleted",
+          metadata: {
+            questionId: id,
+            subjectId: question.subjectId,
+          },
+        });
 
         res.writeHead(200, { "Content-Type": "application/json" });
         return res.end(JSON.stringify({ message: "🗑️ Question deleted!" }));
@@ -829,6 +995,7 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "⚠️ Invalid question ID!" }));
       }
     }
+
 
     // ===================================================
     // IMPORT QUESTIONS
@@ -839,13 +1006,11 @@ const server = http.createServer(async (req, res) => {
     ) {
       upload.single("file")(req, res, async () => {
         try {
-          // ===== 1. FILE CHECK =====
           if (!req.file) {
             res.writeHead(400, { "Content-Type": "application/json" });
             return res.end(JSON.stringify({ message: "No file uploaded" }));
           }
 
-          // ===== 2. PARSE JSON =====
           const jsonText = req.file.buffer.toString("utf8");
           const json = JSON.parse(jsonText);
 
@@ -858,7 +1023,6 @@ const server = http.createServer(async (req, res) => {
             );
           }
 
-          // ===== 3. SUBJECT HANDLING =====
           const subjectName = json.category.trim().toLowerCase();
           let subject = await db
             .collection("subjects")
@@ -873,7 +1037,6 @@ const server = http.createServer(async (req, res) => {
             subject = { _id: sub.insertedId };
           }
 
-          // ===== 4. QUESTION IMPORT =====
           let duplicates = 0;
           const newQuestions = [];
 
@@ -901,7 +1064,6 @@ const server = http.createServer(async (req, res) => {
             });
           }
 
-          // ===== 5. DUPLICATE CHECK =====
           if (!newQuestions.length) {
             res.writeHead(409, { "Content-Type": "application/json" });
             return res.end(
@@ -913,10 +1075,22 @@ const server = http.createServer(async (req, res) => {
             );
           }
 
-          // ===== 6. INSERT =====
           const result = await db
             .collection("questions")
             .insertMany(newQuestions);
+
+          // 🔔 ACTIVITY LOG (BULK)
+          logActivity(db, {
+            actorType: "ADMIN",
+            action: ACTIVITY.QUESTION.BULK_UPLOAD,
+            entityType: "QUESTION",
+            message: "Questions imported via JSON",
+            metadata: {
+              subject: json.category,
+              inserted: result.insertedCount,
+              duplicates,
+            },
+          });
 
           res.writeHead(200, { "Content-Type": "application/json" });
           return res.end(
@@ -963,6 +1137,34 @@ const server = http.createServer(async (req, res) => {
         return res.end(JSON.stringify({ message: "Failed to fetch stats" }));
       }
     }
+
+    // ================= GET ADMIN ACTIVITIES =================
+    else if (req.method === "GET" && req.url.startsWith("/admin/activities")) {
+
+      const activities = await db
+        .collection("activities")
+        .find({})
+        .sort({ createdAt: -1 })
+        .limit(30)
+        .toArray();
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify(activities));
+    }
+
+
+    // ================= MARK ACTIVITY READ =================
+    else if (req.method === "PUT" && req.url === "/admin/activities/read") {
+
+      await db.collection("activities").updateMany(
+        { read: false },
+        { $set: { read: true } }
+      );
+
+      res.writeHead(200, { "Content-Type": "application/json" });
+      return res.end(JSON.stringify({ message: "All notifications marked as read" }));
+    }
+
 
     // ================= INVALID ROUTE =================
     else {

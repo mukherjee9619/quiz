@@ -13,6 +13,16 @@ import { getJSON } from "./authApi";
   ]
 */
 
+// src/services/activityApi.js
 export async function getAdminActivity() {
-  return getJSON("/api/admin/activity");
+  const token = localStorage.getItem("admin_token");
+
+  const res = await fetch("http://127.0.0.1:8081/admin/activities", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) throw new Error("Failed to load activity");
+  return res.json();
 }

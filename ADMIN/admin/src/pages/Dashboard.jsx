@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Topbar from "../components/Topbar";
 import Sidebar from "../components/Sidebar";
@@ -17,9 +17,8 @@ export default function Dashboard() {
   });
 
   const [activities, setActivities] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  const prevStats = useRef(stats);
+  const [loadingStats, setLoadingStats] = useState(true);
+  const [loadingActivity, setLoadingActivity] = useState(true);
 
   /* ================= AUTH CHECK ================= */
   useEffect(() => {
@@ -58,47 +57,26 @@ export default function Dashboard() {
         users: data.users ?? 0,
         results: data.results ?? 0,
       });
-
-      /* 🔁 Fallback activity from stat changes */
-      const fallback = [];
-
-      if (data.questions > prevStats.current.questions) {
-        fallback.push({
-          _id: "q",
-          message: `${data.questions - prevStats.current.questions} questions added`,
-          createdAt: new Date(),
-        });
-      }
-
-      if (data.subjects > prevStats.current.subjects) {
-        fallback.push({
-          _id: "s",
-          message: `${data.subjects - prevStats.current.subjects} subjects added`,
-          createdAt: new Date(),
-        });
-      }
-
-      if (fallback.length && activities.length === 0) {
-        setActivities(fallback);
-      }
-
-      prevStats.current = data;
     } catch (err) {
       console.error("Stats error:", err);
     } finally {
-      setLoading(false);
+      setLoadingStats(false);
     }
   };
 
   /* ================= LOAD ACTIVITY ================= */
   const loadActivity = async () => {
     try {
+      setLoadingActivity(true);
       const data = await getAdminActivity();
-      if (Array.isArray(data) && data.length > 0) {
+
+      if (Array.isArray(data)) {
         setActivities(data);
       }
     } catch (err) {
       console.error("Activity error:", err);
+    } finally {
+      setLoadingActivity(false);
     }
   };
 
@@ -120,6 +98,7 @@ export default function Dashboard() {
         <Topbar title="Dashboard" />
 
         <div className="content dashboard-content">
+          {/* Greeting */}
           <div className="welcome-box">
             <h2>{getGreeting()}, Admin 👋</h2>
             <p>Here is the summary of your quiz system.</p>
@@ -127,11 +106,11 @@ export default function Dashboard() {
 
           {/* Stats */}
           <div className="cards-grid">
-            {["Subjects", "Questions", "Users", "Results"].map((t, i) => (
-              <div key={t} className="widget card-admin pop">
-                <div className="w-title">{t}</div>
+            {["Subjects", "Questions", "Users", "Results"].map((title, i) => (
+              <div key={title} className="widget card-admin pop">
+                <div className="w-title">{title}</div>
                 <div className="w-value">
-                  {loading ? "..." : Object.values(stats)[i]}
+                  {loadingStats ? "..." : Object.values(stats)[i]}
                 </div>
               </div>
             ))}
@@ -142,19 +121,24 @@ export default function Dashboard() {
             <h4 className="activity-title">Recent Activity</h4>
 
             <div className="timeline">
-              {activities.length === 0 && (
+              {loadingActivity && (
+                <p className="muted">Loading activity...</p>
+              )}
+
+              {!loadingActivity && activities.length === 0 && (
                 <p className="muted">No recent activity</p>
               )}
 
-              {activities.map((item, i) => (
-                <div className="timeline-item" key={i}>
-                  <span className="dot"></span>
-                  <p>{item.message}</p>
-                  <small className="time">
-                    {new Date(item.createdAt).toLocaleString()}
-                  </small>
-                </div>
-              ))}
+              {!loadingActivity &&
+                activities.map((item) => (
+                  <div className="timeline-item" key={item._id}>
+                    <span className="dot"></span>
+                    <p>{item.message}</p>
+                    <small className="time">
+                      {new Date(item.createdAt).toLocaleString()}
+                    </small>
+                  </div>
+                ))}
             </div>
           </div>
         </div>
