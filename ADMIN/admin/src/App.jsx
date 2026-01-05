@@ -9,11 +9,12 @@ import Register from "./pages/Register";
 import Dashboard from "./pages/Dashboard";
 import Subjects from "./pages/Subjects";
 import AddSubject from "./pages/AddSubject";
-import EditSubject from "./pages/EditSubject"; 
+import EditSubject from "./pages/EditSubject";
 import Questions from "./pages/Questions";
 import AddQuestion from "./pages/AddQuestion";
-import EditQuestion from "./pages/EditQuestion"; 
+import EditQuestion from "./pages/EditQuestion";
 import PrivateRoute from "./components/PrivateRoute";
+import Users from "./pages/Users";
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/otp" element={<OtpVerification />} />
       <Route path="/reset-password" element={<ResetPassword />} />
 
+      <Route path="/users" element={<Users />} />
       <Route path="/register" element={<Register />} />
 
       {/* Dashboard */}

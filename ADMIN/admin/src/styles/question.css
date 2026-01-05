@@ -1,9 +1,9 @@
 /* =========================
-   HEADER BAR – PREMIUM / GLOW
+   QUESTION HEADER BAR
 ========================= */
 .question-header-bar {
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr auto;
+  grid-template-columns: 1.2fr 1fr auto auto;
   gap: 16px;
   margin-bottom: 22px;
   padding: 16px 18px;
@@ -11,6 +11,7 @@
   position: relative;
   overflow: hidden;
   z-index: 1;
+
   background: linear-gradient(
     135deg,
     rgba(15, 23, 42, 0.9),
@@ -41,8 +42,9 @@
   );
   background-size: 300% 300%;
   animation: gradientMove 6s linear infinite;
-  pointer-events: none;   /* ✅ CRITICAL FIX */
-  z-index: 0;  
+  pointer-events: none;
+  z-index: 0;
+
   -webkit-mask:
     linear-gradient(#000 0 0) content-box,
     linear-gradient(#000 0 0);
@@ -51,10 +53,11 @@
 }
 
 /* =========================
-   ICON INPUT WRAPPER
+   INPUT ICON WRAPPER
 ========================= */
 .input-icon {
   position: relative;
+  width: 100%;
 }
 
 .input-icon .icon {
@@ -63,7 +66,7 @@
   top: 50%;
   transform: translateY(-50%);
   font-size: 15px;
-  opacity: 0.8;
+  opacity: 0.85;
   pointer-events: none;
 }
 
@@ -92,23 +95,52 @@
 }
 
 /* =========================
-   SUBJECT DROPDOWN
+   CUSTOM SUBJECT SELECT
 ========================= */
+.select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Remove native arrow */
 .question-subject {
   width: 100%;
   background: rgba(2, 6, 23, 0.9);
   border: 1px solid rgba(148, 163, 184, 0.18);
   border-radius: 14px;
-  padding: 12px 16px 12px 42px;
+
+  /* left space for icon, right space for arrow */
+  padding: 12px 40px 12px 42px;
+
   color: #e5e7eb;
   font-size: 14px;
+  cursor: pointer;
   transition: all 0.25s ease;
+
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.question-subject:hover {
+  border-color: rgba(99, 102, 241, 0.6);
 }
 
 .question-subject:focus {
   outline: none;
   border-color: #6366f1;
   box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.35);
+}
+
+/* Custom arrow */
+.select-arrow {
+  position: absolute;
+  right: 14px; /* NOT extreme right */
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 28px;
+  opacity: 0.75;
+  pointer-events: none;
 }
 
 /* =========================
@@ -153,7 +185,6 @@
   background: rgba(148, 163, 184, 0.08);
   border: 1px dashed rgba(148, 163, 184, 0.25);
   color: #cbd5f5;
-
   transition: all 0.25s ease;
 }
 
@@ -223,7 +254,6 @@
   border-top: 1px dashed rgba(255, 255, 255, 0.1);
 }
 
-/* Page buttons */
 .page-btn {
   padding: 8px 16px;
   border-radius: 999px;
@@ -326,7 +356,6 @@
     width: 100%;
   }
 
-  /* Show only active + arrows on mobile */
   .pagination-wrapper .page-btn:not(.active):not(:first-child):not(:last-child) {
     display: none;
   }

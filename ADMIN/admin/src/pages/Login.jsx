@@ -113,7 +113,7 @@ export default function Login() {
                   }
                 }}
               />
-              <span>Remember email & password</span>
+              <span>Remember Me</span>
             </label>
 
             <span

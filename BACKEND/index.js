@@ -24,8 +24,8 @@ function hashOTP(otp) {
 }
 // ===== MongoDB connection =====
 
-// const url = "mongodb://127.0.0.1:27017";
-const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
+const url = "mongodb://127.0.0.1:27017";
+// const url = "mongodb+srv://KillerTuri:nLfnCZdP1wSCtTDj@cluster0.ytyq8p5.mongodb.net/";
 const client = new MongoClient(url);
 let db;
 

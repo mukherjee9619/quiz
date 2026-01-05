@@ -129,9 +129,7 @@ export default function Questions() {
         return;
       }
 
-      toast.success(
-        `${data.inserted} imported, ${data.duplicates} duplicates`
-      );
+      toast.success(`${data.inserted} imported, ${data.duplicates} duplicates`);
       loadQuestions();
     } catch {
       toast.error("Server error during import");
@@ -177,8 +175,9 @@ export default function Questions() {
             </div>
 
             {/* SUBJECT */}
-            <div className="input-icon">
+            <div className="input-icon select-wrapper">
               <span className="icon">🎯</span>
+
               <select
                 className="question-subject"
                 value={subjectId}
@@ -194,6 +193,9 @@ export default function Questions() {
                   </option>
                 ))}
               </select>
+
+              {/* ✅ Custom arrow */}
+              <span className="select-arrow">▾</span>
             </div>
 
             <button
@@ -262,13 +264,13 @@ export default function Questions() {
 
                 {getPageNumbers(page, totalPages).map((p, i) =>
                   p === "..." ? (
-                    <span key={i} className="page-dots">…</span>
+                    <span key={i} className="page-dots">
+                      …
+                    </span>
                   ) : (
                     <button
                       key={p}
-                      className={`page-btn ${
-                        page === p ? "active" : ""
-                      }`}
+                      className={`page-btn ${page === p ? "active" : ""}`}
                       onClick={() => setPage(p)}
                     >
                       {p}
